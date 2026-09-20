@@ -1,0 +1,72 @@
+# =======================================================================
+# Build & Compilation Outputs (.NET / C#)
+# =======================================================================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]uild/
+*.dll
+*.exe
+*.pdb
+*.deps.json
+*.runtimeconfig.json
+*.cache
+*.FileListAbsolute.txt
+*.sourcelink.json
+
+# =======================================================================
+# IDEs & Editor Configuration (.vscode, .idea, Visual Studio, Rider)
+# =======================================================================
+.vscode/
+.idea/
+.vs/
+_ReSharper*/
+*.DotSettings.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# =======================================================================
+# Test Results & Code Coverage
+# =======================================================================
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+
+# =======================================================================
+# NuGet Artifacts & Packages Cache
+# =======================================================================
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.assets.json
+
+# =======================================================================
+# Environment, Credentials & Local Overrides (Twelve-Factor)
+# =======================================================================
+.env
+*.env
+*.env.*
+*.local
+**/appsettings.local.json
+**/appsettings.*.local.json
+**/appsettings.Development.json
+**/appsettings.*.json
+!**/appsettings.json
+
+# =======================================================================
+# Operating System Files
+# =======================================================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
