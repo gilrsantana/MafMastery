@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AiProviderBenchmarker.Application/AiProviderBenchmarker.Application.csproj" />
+    <Project Path="src/AiProviderBenchmarker.Cli/AiProviderBenchmarker.Cli.csproj" />
+    <Project Path="src/AiProviderBenchmarker.Domain/AiProviderBenchmarker.Domain.csproj" />
+    <Project Path="src/AiProviderBenchmarker.Infrastructure/AiProviderBenchmarker.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AiProviderBenchmarker.Tests/AiProviderBenchmarker.Tests.csproj" />
+  </Folder>
+</Solution>
