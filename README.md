@@ -81,6 +81,11 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [API Reference: IChatClient](https://learn.microsoft.com/dotnet/api/microsoft.extensions.ai.ichatclient)
 - **Projeto Integrador 01**: 
   - *Nome*: `AiProviderBenchmarker.Cli`
+  - *Caminho*: `src/Modulo01/AiProviderBenchmarker/` (com demo rápida em `src/Modulo01/SimpleChatDemo/`)
+  - *Execução & Testes*:
+    - Demo Rápida: `dotnet run --project src/Modulo01/SimpleChatDemo`
+    - CLI Interativo: `dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli`
+    - Suíte de Testes: `dotnet test src/Modulo01/AiProviderBenchmarker/AiProviderBenchmarker.slnx`
   - *Escopo*: Console App em C# construído com Clean Architecture que injeta uma `IChatClientFactory`. O app envia um lote idêntico de prompts para múltiplos provedores simultaneamente, exibindo no console streaming token-a-token e métricas lado a lado (TTFT - Time To First Token, total de tokens gerados, latência total e custo financeiro estimado).
 
 ---
@@ -94,6 +99,10 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Resiliência HTTP no .NET com Polly](https://learn.microsoft.com/dotnet/core/resilience/http-resilience)
 - **Projeto Integrador 02**:
   - *Nome*: `SmartRouter.Gateway`
+  - *Caminho*: `src/Modulo02/SmartRouter/`
+  - *Execução & Testes*:
+    - Minimal API: `dotnet run --project src/Modulo02/SmartRouter/src/SmartRouter.Gateway`
+    - Suíte de Testes: `dotnet test src/Modulo02/SmartRouter/SmartRouter.sln`
   - *Escopo*: API WebMinimal em C# que encapsula um `SmartRoutingChatClient` herdando de `DelegatingChatClient`. O cliente avalia dinamicamente a requisição: consultas simples vão para modelos de baixo custo via OpenRouter; se houver instabilidade ou latência acima do limiar, a resiliência aciona fallback transparente para o Azure OpenAI.
 
 ---
@@ -107,6 +116,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Cache Distribuído em .NET](https://learn.microsoft.com/aspnet/core/performance/caching/distributed)
 - **Projeto Integrador 03**:
   - *Nome*: `ResilientMemory.Core`
+  - *Caminho*: `src/Modulo03/ResilientMemory/`
   - *Escopo*: Serviço de gerenciamento de sessão conversacional com suporte multi-tenant. Implementa pipeline em background que monitora a contagem de tokens da sessão no Redis: ao atingir 75% da janela do modelo, aciona um processo assíncrono para sumarizar e consolidar mensagens anteriores, mantendo a conversa fluida, preservando a identidade do usuário e garantindo custo controlado de prompt.
 
 ---
@@ -122,6 +132,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Microsoft Research GraphRAG Overview](https://learn.microsoft.com/azure/developer/ai/intro-graphrag)
 - **Projeto Integrador 04**:
   - *Nome*: `EnterpriseKnowledge.AdvancedRag`
+  - *Caminho*: `src/Modulo04/EnterpriseKnowledge/`
   - *Escopo*: Mecanismo completo de RAG corporativo sobre documentações técnicas complexas. O sistema realiza ingestão hierárquica (Parent-Child), executa busca híbrida (vetorial + lexical) com mesclagem RRF, aplica um modelo Cross-Encoder para reordenar os top 5 resultados mais precisos e entrega a resposta citando fontes verificadas. O projeto acompanha uma suíte de testes automatizados com `Microsoft.Extensions.AI.Evaluation` que calcula a nota de *Groundedness* e reprova o build se houver alucinação.
 
 ---
@@ -134,6 +145,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Uso do Ollama Chat Client no .NET](https://learn.microsoft.com/dotnet/ai/ichatclient#use-an-ollama-chat-client)
 - **Projeto Integrador 05**:
   - *Nome*: `HybridLocalCloud.Engine`
+  - *Caminho*: `src/Modulo05/HybridLocalCloud/`
   - *Escopo*: Sistema de processamento documental que roda localmente via Ollama (`phi-4` ou `llama3.2`). Quando uma demanda exige raciocínio complexo que excede os recursos locais, a aplicação solicita confirmação e despacha os dados higienizados para o provedor em nuvem, emitindo relatório comparativo de VRAM/RAM vs tokens tarifados.
 
 ---
@@ -153,6 +165,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Saídas Estruturadas com Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/how-to/structured-outputs)
 - **Projeto Integrador 06**:
   - *Nome*: `PromptArchitectAndTriage.Service`
+  - *Caminho*: `src/Modulo06/PromptArchitect/`
   - *Escopo*: Sistema de triagem corporativa que ingere múltiplos formatos de entrada (áudio com depoimento do cliente via Whisper, imagem de dano via modelo de visão) e gera um laudo pericial validado contra um C# `record SinistroReport(...)`. O projeto inclui um benchmark automatizado que compara a execução do System Prompt nos formatos Prosa, JSON, YAML e TON, gerando um relatório em tabela com: tokens consumidos no prompt, tempo de resposta e taxa de conformidade com 10 restrições de negócio complexas.
 
 ---
@@ -166,6 +179,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Linha de Base de Segurança do Azure para Serviços de IA](https://learn.microsoft.com/azure/ai-services/openai/concepts/security-baseline)
 - **Projeto Integrador 07**:
   - *Nome*: `DataPrivacyAuditor.Tool`
+  - *Caminho*: `src/Modulo07/DataPrivacyAuditor/`
   - *Escopo*: Ferramenta de auditoria de conformidade que intercepta chamadas de IA via middleware HTTP, inspeciona headers (verificando se o endpoint respeita flags de não retenção de dados), valida se dados sensíveis estão sendo enviados para regiões e endpoints homologados e emite relatório alinhado ao Azure Trust Center.
 
 ---
@@ -179,6 +193,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Telemetria no .NET Aspire](https://learn.microsoft.com/dotnet/aspire/fundamentals/telemetry)
 - **Projeto Integrador 08**:
   - *Nome*: `GenAiObservability.Dashboard`
+  - *Caminho*: `src/Modulo08/GenAiObservability/`
   - *Escopo*: Aplicação orquestrada com .NET Aspire utilizando `client.AsBuilder().UseOpenTelemetry().Build()`. Apresenta no painel do Aspire todas as chamadas de LLM, custo acumulado por tenant/usuário, taxas de erro, rastreabilidade em cascata das chamadas de ferramentas e gatilhos de FinOps quando o orçamento diário for atingido.
 
 ---
@@ -192,6 +207,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Filtragem de Conteúdo no Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/concepts/content-filter)
 - **Projeto Integrador 09**:
   - *Nome*: `AiFirewall.Middleware`
+  - *Caminho*: `src/Modulo09/AiFirewall/`
   - *Escopo*: Um `DelegatingChatClient` que atua como Web Application Firewall (WAF) para chamadas de IA. Analisa mensagens de entrada contra padrões de injeção direta e testa a carga contra a API do Azure Content Safety. No retorno da resposta, intercepta e mascara chaves de API ou PII (dados pessoais) vazados acidentalmente.
 
 ---
@@ -205,6 +221,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Tutorial de Regressão e Classificação com ML.NET](https://learn.microsoft.com/dotnet/machine-learning/tutorials/predict-prices)
 - **Projeto Integrador 10**:
   - *Nome*: `SmartSupportTriage.Hybrid`
+  - *Caminho*: `src/Modulo10/SmartSupportTriage/`
   - *Escopo*: Pipeline de triagem de tickets: um modelo treinado com ML.NET analisa o ticket recebido e prediz a severidade e categoria em microssegundos (on-premises). Se o problema for comum, despacha uma resposta padrão; se for anômalo ou complexo, enriquece o contexto e aciona o pipeline de LLM para resolução detalhada.
 
 ---
@@ -218,6 +235,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Invocação de Funções e Ferramentas com IChatClient](https://learn.microsoft.com/dotnet/ai/ichatclient#tool-calling)
 - **Projeto Integrador 11**:
   - *Nome*: `EnterpriseMcpServer.Connector`
+  - *Caminho*: `src/Modulo11/EnterpriseMcpServer/`
   - *Escopo*: Criação de um servidor MCP em .NET que disponibiliza recursos de banco de dados SQL e endpoints REST corporativos com esquemas padronizados. Em seguida, criação de um cliente em C# com `IChatClient` que consome as ferramentas desse servidor MCP via SSE, permitindo que a LLM execute consultas analíticas seguras e auditadas.
 
 ---
@@ -237,6 +255,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Esquema do Declarative Agent Manifest da Microsoft](https://learn.microsoft.com/microsoft-365/copilot/extensibility/declarative-agent-manifest-1.8)
 - **Projeto Integrador 12**:
   - *Nome*: `AutonomousDevAssistant.Agent`
+  - *Caminho*: `src/Modulo12/AutonomousDevAssistant/`
   - *Escopo*: Agente inteligente cuja persona, ferramentas e regras de governança são carregadas dinamicamente a partir de um manifesto declarativo estruturado (JSON/YAML/TON). O agente recebe uma demanda de desenvolvimento em linguagem natural, gera plano de trabalho em memória, executa inspeção de repositório e alteração de arquivos de código via MCP, e antes de qualquer comando de alto risco (ex: commit ou deploy), pausa o runtime e solicita confirmação explícita do desenvolvedor (Human-in-the-Loop).
 
 ---
@@ -250,6 +269,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Orquestração Magentic no Agent Framework](https://learn.microsoft.com/agent-framework/workflows/orchestrations/magentic)
 - **Projeto Integrador 13**:
   - *Nome*: `EnterpriseAudit.MultiAgentWorkflow`
+  - *Caminho*: `src/Modulo13/EnterpriseAudit/`
   - *Escopo*: Workflow orquestrado composto por 3 agentes especialistas (Pesquisador de Regulamentações, Analista de Dados Financeiros e Auditor de Conformidade) coordenados por um Agente Gerente. O fluxo executa análises de dados em paralelo, consolida as inconsistências através de um grafo com branches condicionais e produz um relatório final consolidado com isolamento total de estado entre execuções concorrentes.
 
 ---
@@ -293,6 +313,7 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
 - **Princípios & Padrões**: The Twelve-Factor App & The Twelve-Factor Agent completos, Clean Architecture / DDD, Enterprise Integration Patterns, Zero Trust Architecture.
 - **Projeto Integrador 15 (Grand Finale Capstone)**:
   - *Nome*: `EnterpriseAgenticPlatform.Host`
+  - *Caminho*: `src/Modulo15/EnterpriseAgenticPlatform/`
   - *Escopo*: A plataforma corporativa definitiva em .NET. Uma solução distribuída orquestrada com .NET Aspire que sobe um cluster de execução de agentes, provê um portal web para visualização de métricas de FinOps e auditoria de contratos, expõe um catálogo de ferramentas MCP corporativas e executa fluxos complexos de negócios (ex: *Onboarding Automatizado de Fornecedores* envolvendo auditoria jurídica, fiscal e de segurança) guiados 100% por contratos declarativos em Markdown com garantia matemática e determinística de cumprimento de regras.
 
 ---
@@ -303,7 +324,7 @@ Cada módulo acima foi redigido com metadados e fronteiras bem definidas para qu
 
 1. **Geração de Guias de Estudo e Especificação**: Utilize o **Meta-Prompt da Seção 3** para gerar um documento Markdown dedicado em `docs/modulos/modulo-XX-<nome>/GUIA_DE_ESTUDO.md` para o módulo escolhido. Esse guia conterá toda a teoria aprofundada, checkpoints de aprendizado e a especificação arquitetural do projeto integrador.
 2. **Estudo e Validação dos Checkpoints**: Leia o guia gerado, consulte os links do Microsoft Learn e valide cada checkpoint conceitual antes de escrever código.
-3. **Construção do Projeto Integrador**: Utilize a especificação técnica do guia para implementar o software em C# (.NET 10 LTS) na pasta correspondente em `src/ModuloXX_<NomeDoProjeto>`.
+3. **Construção do Projeto Integrador**: Utilize a especificação técnica do guia para implementar o software em C# (.NET 10 LTS) na pasta modular correspondente em `src/ModuloXX/<NomeDoProjeto>` (por exemplo: `src/Modulo01/AiProviderBenchmarker/`, `src/Modulo02/SmartRouter/`). Quaisquer projetos complementares ou demos didáticas rápidas também devem ser organizados dentro da pasta do respectivo módulo (ex.: `src/Modulo01/SimpleChatDemo/`).
 4. **Evolução Contínua**: Cada projeto integrador implementa testes unitários/integração, observabilidade e boas práticas de engenharia de software de forma independente e incremental.
 
 ---
@@ -368,11 +389,12 @@ O documento gerado deve conter estritamente as seguintes seções estruturadas:
 
 #### 6. Especificação Técnica do Projeto Integrador
 - **Nome do Projeto**: Nome padronizado conforme o README.
+- **Caminho da Solução**: Caminho padronizado obrigatoriamente dentro da pasta modular em `src/Modulo{{NUMERO}}/{{NOME_DO_PROJETO}}/`.
 - **Escopo e Problema de Negócio**: Cenário corporativo simulado.
 - **Requisitos Funcionais (RFs)**: Lista numerada (RF-01, RF-02...) com as capacidades exigidas.
 - **Requisitos Não-Funcionais (RNFs)**: Latência, resiliência, observabilidade, desacoplamento e limites de alocação de memória.
 - **Estrutura de Projetos e Pastas (Clean Architecture)**:
-  - Exemplo: `Domain`, `Application`, `Infrastructure`, `Presentation`.
+  - Exemplo: `Domain`, `Application`, `Infrastructure`, `Presentation` sob `src/Modulo{{NUMERO}}/{{NOME_DO_PROJETO}}/`.
 - **Contratos de Interfaces e Entidades Principais**:
   - Código C# demonstrando apenas os contratos essenciais (interfaces, records, DTOs e assinaturas de métodos), sem implementação concreta de regras de negócio.
 - **Critérios de Aceite & Definição de Pronto (Definition of Done - DoD)**:
@@ -381,5 +403,5 @@ O documento gerado deve conter estritamente as seguintes seções estruturadas:
   - Cenários de Testes Unitários (mocks com xUnit/Moq/NSubstitute) e Testes de Integração requeridos.
 
 #### 7. Roteiro Passo a Passo de Construção (Build Roadmap)
-- Sequência lógica e ordenada (Etapa 1 a Etapa N) recomendada para o desenvolvedor sentar no teclado e construir o software de forma incremental e testável.
+- Sequência lógica e ordenada (Etapa 1 a Etapa N) recomendada para o desenvolvedor sentar no teclado e construir o software de forma incremental e testável, contendo comandos explícitos de inicialização de diretórios e soluções sob `src/Modulo{{NUMERO}}/{{NOME_DO_PROJETO}}/`, execução (`dotnet run --project ...`) e testes (`dotnet test ...`).
 ````

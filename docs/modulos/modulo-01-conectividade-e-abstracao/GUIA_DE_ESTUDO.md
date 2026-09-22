@@ -4,7 +4,8 @@
 > **Versão do .NET:** .NET 10 (LTS)  
 > **Linguagem:** C# 14  
 > **Pacote Central:** `Microsoft.Extensions.AI.Abstractions` / `Microsoft.Extensions.AI`  
-> **Projeto Integrador Associado:** `src/Modulo01_AiProviderBenchmarker/` (`AiProviderBenchmarker.Cli`)
+> **Projeto Integrador Associado:** `src/Modulo01/AiProviderBenchmarker/` (`AiProviderBenchmarker.Cli`)  
+> **Projeto Didático Complementar:** `src/Modulo01/SimpleChatDemo/` (`SimpleChatDemo`)
 
 ---
 
@@ -252,7 +253,7 @@ Consulte a documentação técnica oficial para aprofundamento:
 ### 6.4 Estrutura de Diretórios da Solução Recomendada
 
 ```
-src/Modulo01_AiProviderBenchmarker/
+src/Modulo01/AiProviderBenchmarker/
 ├── AiProviderBenchmarker.sln
 ├── src/
 │   ├── AiProviderBenchmarker.Domain/              # Entidades, Enums, Interfaces de Domínio
@@ -394,7 +395,12 @@ public interface IRunBenchmarkUseCase
 Siga este passo a passo para desenvolver o projeto integrador de forma incremental:
 
 1. **Fase 1: Inicialização da Solução e Estrutura**
-   - Criar a solução .NET 10: `dotnet new sln -n AiProviderBenchmarker`.
+   - Criar o diretório de destino sob `src/Modulo01/`:
+     ```bash
+     mkdir -p src/Modulo01/AiProviderBenchmarker
+     cd src/Modulo01/AiProviderBenchmarker
+     dotnet new sln -n AiProviderBenchmarker
+     ```
    - Criar os projetos de biblioteca de classes e console com separação de pastas (`Domain`, `Application`, `Infrastructure`, `Cli`, `Tests`).
    - Instalar os pacotes essenciais:
      - `Microsoft.Extensions.AI` e `Microsoft.Extensions.AI.Abstractions`
@@ -423,5 +429,20 @@ Siga este passo a passo para desenvolver o projeto integrador de forma increment
    - Implementar a CLI com `Spectre.Console`.
    - Criar a visualização que exibe os provedores rodando e imprime a tabela final ordenada pelo menor tempo de resposta ou custo.
 
-6. **Fase 6: Testes e Validação Final**
-   - Criar testes com mocks garantindo que, se um provedor lançar `HttpRequestException` (queda de rede), os demais provedores continuam executando e o relatório exibe a falha sem abortar a aplicação.
+6. **Fase 6: Testes, Execução e Validação Final**
+   - Executar os testes unitários cobrindo todos os cenários de isolamento de falhas e cálculo de métricas:
+     ```bash
+     dotnet test src/Modulo01/AiProviderBenchmarker/AiProviderBenchmarker.slnx
+     ```
+   - Executar a aplicação CLI em modo interativo:
+     ```bash
+     dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli
+     ```
+   - Executar a CLI em modo de linha de comando com provedores selecionados:
+     ```bash
+     dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --providers Simulated,Ollama --max-tokens 200
+     ```
+   - Executar o projeto didático complementar rápido (`SimpleChatDemo`):
+     ```bash
+     dotnet run --project src/Modulo01/SimpleChatDemo
+     ```
