@@ -1,170 +1,170 @@
-# Módulo 01: AiProviderBenchmarker — Comparador de Provedores de IA
+# Module 01: AiProviderBenchmarker — AI Provider Benchmarker
 
-> **Projeto Integrador do Módulo 01** do programa **MafMastery**.  
-> Implementado em **.NET 10 (LTS)** e **C# 14**, baseado na biblioteca oficial **`Microsoft.Extensions.AI` (MEAI)**, **Clean Architecture**, princípios **Twelve-Factor App & Agent** e interface rica com **Spectre.Console**.
-
----
-
-## 🎯 Objetivo do Projeto
-
-O **AiProviderBenchmarker** é uma ferramenta de linha de comando (CLI) enterprise projetada para submeter simultaneamente o mesmo prompt a múltiplos provedores de Modelos de Linguagem (LLMs) — tanto em nuvem comercial (OpenAI, Azure OpenAI) quanto locais (Ollama) e simulados offline —, mensurando e comparando com rigor:
-
-1. **TTFT (Time To First Token)**: Tempo decorrido até a chegada do primeiríssimo token via streaming (medida fundamental de percepção de velocidade de resposta).
-2. **Latência Total**: Duração total da geração de ponta a ponta.
-3. **Throughput de Geração (TPS)**: Taxa real de tokens de saída por segundo gerados pelo modelo, expurgando o TTFT da equação para isolar a capacidade do motor de inferência.
-4. **Estimativa FinOps ($ USD)**: Cálculo do custo financeiro da inferência baseado no consumo de tokens de entrada/saída contra tabelas públicas de precificação por milhão de tokens.
+> **Capstone Project for Module 01** of the **MafMastery** program.  
+> Implemented in **.NET 10 (LTS)** and **C# 14**, based on the official **`Microsoft.Extensions.AI` (MEAI)** library, **Clean Architecture**, **Twelve-Factor App & Agent** principles, and a rich console interface powered by **Spectre.Console**.
 
 ---
 
-## 🏛️ Arquitetura da Solução
+## 🎯 Project Objective
 
-A solução segue rigorosamente os princípios de **Clean Architecture**, com separação clara de responsabilidades:
+The **AiProviderBenchmarker** is an enterprise-grade command-line interface (CLI) tool designed to simultaneously submit the same prompt to multiple Large Language Model (LLM) providers — including commercial cloud providers (OpenAI, Azure OpenAI), local models (Ollama), and offline simulated engines —, rigorously measuring and comparing:
+
+1. **TTFT (Time To First Token)**: Elapsed time until the arrival of the very first token via streaming (a key metric for perceived response speed).
+2. **Total Latency**: End-to-end duration of the completion generation.
+3. **Generation Throughput (TPS)**: Real token generation rate (output tokens per second), excluding TTFT from the equation to isolate the inference engine's actual throughput.
+4. **FinOps Cost Estimation ($ USD)**: Financial inference cost calculation based on input/output token consumption against public pricing tables per million tokens.
+
+---
+
+## 🏛️ Solution Architecture
+
+The solution strictly adheres to **Clean Architecture** principles, maintaining a clean separation of concerns:
 
 ```
 src/Module01/AiProviderBenchmarker/
-├── AiProviderBenchmarker.slnx              # Arquivo de solução moderno do .NET 10
+├── AiProviderBenchmarker.slnx              # Modern .NET 10 solution file
 ├── src/
-│   ├── AiProviderBenchmarker.Domain/        # Camada de Domínio: regras puras, sem I/O ou frameworks
+│   ├── AiProviderBenchmarker.Domain/        # Domain Layer: pure business rules, zero I/O or frameworks
 │   │   ├── Model/
 │   │   │   ├── ProviderType.cs              # Enum: OpenAi, AzureOpenAi, Ollama, Simulated
-│   │   │   ├── ModelPricing.cs              # Value Object de FinOps (custo por 1M tokens)
-│   │   │   └── ProviderMetric.cs            # Entidade/DTO de resultado com cálculo de TPS
+│   │   │   ├── ModelPricing.cs              # FinOps Value Object (cost per 1M tokens)
+│   │   │   └── ProviderMetric.cs            # Result Entity/DTO with TPS calculation
 │   │   └── Services/
-│   │       └── ICostEstimator.cs            # Contrato para estimativa de custos de inferência
+│   │       └── ICostEstimator.cs            # Contract for inference cost estimation
 │   │
-│   ├── AiProviderBenchmarker.Application/   # Casos de Uso e Orquestração
+│   ├── AiProviderBenchmarker.Application/   # Use Cases and Orchestration
 │   │   ├── Common/
-│   │   │   └── IChatClientFactory.cs        # Contrato de fábrica para abstração de IChatClient
+│   │   │   └── IChatClientFactory.cs        # Factory contract for IChatClient abstraction
 │   │   └── UseCases/
-│   │       ├── RunBenchmarkCommand.cs       # DTO de entrada do benchmark
-│   │       ├── IRunBenchmarkUseCase.cs      # Contrato do caso de uso
-│   │       └── RunBenchmarkHandler.cs       # Disparo paralelo (Task.WhenAll), TTFT & resiliência
+│   │       ├── RunBenchmarkCommand.cs       # Benchmark input command DTO
+│   │       ├── IRunBenchmarkUseCase.cs      # Use case contract
+│   │       └── RunBenchmarkHandler.cs       # Parallel execution (Task.WhenAll), TTFT & resilience
 │   │
-│   ├── AiProviderBenchmarker.Infrastructure/ # Adaptadores externos de IA e Precificação
+│   ├── AiProviderBenchmarker.Infrastructure/ # External AI Adapters and Pricing
 │   │   ├── Configuration/
-│   │   │   ├── AiProviderConfig.cs      # Modelo base extensível com AiProviderName
-│   │   │   └── AiProvidersOptions.cs    # Coleção de provedores (List<AiProviderConfig>)
+│   │   │   ├── AiProviderConfig.cs      # Extensible base model with AiProviderName
+│   │   │   └── AiProvidersOptions.cs    # Provider collection (List<AiProviderConfig>)
 │   │   ├── Mock/
-│   │   │   └── SimulatedChatClient.cs       # Implementação IChatClient offline e determinística
+│   │   │   └── SimulatedChatClient.cs       # Deterministic, offline IChatClient implementation
 │   │   ├── Factories/
-│   │   │   ├── Strategies/                  # Padrão Strategy (SOLID/OCP) para instanciação de clientes
-│   │   │   │   ├── IChatClientStrategy.cs   # Contrato da estratégia
-│   │   │   │   ├── SimulatedClientStrategy.cs # Estratégia para motor simulado e fallback
-│   │   │   │   ├── AzureOpenAiClientStrategy.cs # Estratégia para Azure OpenAI
-│   │   │   │   └── OpenAiCompatibleClientStrategy.cs # Estratégia para OpenAI / Ollama / Gemini / Grok
-│   │   │   └── ChatClientFactory.cs         # Fábrica desacoplada orquestradora (Strategy Pattern)
+│   │   │   ├── Strategies/                  # Strategy Pattern (SOLID/OCP) for client instantiation
+│   │   │   │   ├── IChatClientStrategy.cs   # Strategy interface
+│   │   │   │   ├── SimulatedClientStrategy.cs # Strategy for simulated engine and fallback
+│   │   │   │   ├── AzureOpenAiClientStrategy.cs # Strategy for Azure OpenAI
+│   │   │   │   └── OpenAiCompatibleClientStrategy.cs # Strategy for OpenAI / Ollama / Gemini / Grok
+│   │   │   └── ChatClientFactory.cs         # Decoupled orchestrating factory (Strategy Pattern)
 │   │   └── Pricing/
-│   │       └── CostEstimator.cs             # Estimativa dinâmica de custos baseada em appsettings.json
+│   │       └── CostEstimator.cs             # Dynamic cost estimator based on appsettings.json
 │   │
-│   └── AiProviderBenchmarker.Cli/           # Interface de Apresentação (Console)
-│       ├── appsettings.json                 # Configurações de modelos, endpoints e credenciais
+│   └── AiProviderBenchmarker.Cli/           # Presentation Layer (Console)
+│       ├── appsettings.json                 # Model, endpoint, and credential configuration
 │       ├── Configuration/
-│       │   └── ServiceCollectionExtensions.cs # Injeção de Dependência (IoC) e Configuration
+│       │   └── ServiceCollectionExtensions.cs # Dependency Injection (IoC) and Configuration
 │       ├── Arguments/
-│       │   ├── CliParsedOptions.cs          # Modelo com opções parseadas da linha de comando
-│       │   └── CliArgumentParser.cs         # Parser isolado de flags (-p, --providers, -m, -h)
+│       │   ├── CliParsedOptions.cs          # Model with parsed command-line options
+│       │   └── CliArgumentParser.cs         # Isolated parser for flags (-p, --providers, -m, -h)
 │       ├── Runners/
-│       │   ├── IBenchmarkRunner.cs          # Contrato de executor
-│       │   ├── InteractiveBenchmarkRunner.cs # Fluxo interativo guiado (Spectre.Console)
-│       │   ├── NonInteractiveBenchmarkRunner.cs # Fluxo autônomo para CI/CD
-│       │   └── CliApp.cs                    # Orquestrador de alto nível da aplicação
+│       │   ├── IBenchmarkRunner.cs          # Benchmark runner contract
+│       │   ├── InteractiveBenchmarkRunner.cs # Guided interactive workflow (Spectre.Console)
+│       │   ├── NonInteractiveBenchmarkRunner.cs # Autonomous workflow for CI/CD
+│       │   └── CliApp.cs                    # High-level application orchestrator
 │       ├── UI/
-│       │   ├── TableRenderer.cs             # Renderização de tabelas, árvore, pódio e status
-│       │   └── CliHelpRenderer.cs           # Renderização da tela de ajuda (--help)
-│       └── Program.cs                       # Entrypoint minimalista (< 35 linhas)
+│       │   ├── TableRenderer.cs             # Renders tables, trees, podium cards, and status
+│       │   └── CliHelpRenderer.cs           # Help screen renderer (--help)
+│       └── Program.cs                       # Minimalist entrypoint (< 35 lines)
 │
 └── tests/
-    └── AiProviderBenchmarker.Tests/         # Testes automatizados (xUnit, FluentAssertions, NSubstitute)
-        ├── Domain/                          # Testes unitários das fórmulas de métricas (TPS)
-        ├── Infrastructure/                  # Testes do catálogo de custos e precificação
-        └── Application/                     # Testes de concorrência e tolerância a falhas
+    └── AiProviderBenchmarker.Tests/         # Automated tests (xUnit, FluentAssertions, NSubstitute)
+        ├── Domain/                          # Unit tests for metric formulas (TPS)
+        ├── Infrastructure/                  # Tests for cost catalog and pricing
+        └── Application/                     # Concurrency and fault-tolerance tests
 ```
 
 ---
 
-## ⚡ Como Executar
+## ⚡ How to Run
 
-### ⚠️ Regra Importante sobre Argumentos no `dotnet run`
+### ⚠️ Important Rule for `dotnet run` Arguments
 
-Ao executar uma aplicação de console com o `dotnet run`, **é obrigatório utilizar o separador `--` antes das opções da sua aplicação**.  
-Caso contrário, o utilitário `dotnet run` interceptará argumentos como `--help`, `-p` ou `--providers` como se fossem opções do próprio SDK do .NET!
+When running a console application with `dotnet run`, **you must supply the `--` delimiter before passing arguments to your application**.  
+Otherwise, the `dotnet run` host utility will intercept arguments such as `--help`, `-p`, or `--providers` as if they were flags for the .NET SDK itself!
 
 ```bash
-# ❌ INCORRETO (o dotnet run intercepta a flag e exibe o help do próprio .NET):
+# ❌ INCORRECT (dotnet run intercepts the flag and displays .NET SDK help):
 dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli --help
 
-# ✔️ CORRETO (os argumentos após '--' são entregues diretamente à aplicação AiProviderBenchmarker):
+# ✔️ CORRECT (arguments after '--' are forwarded directly to AiProviderBenchmarker):
 dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --help
 ```
 
 ---
 
-### 1. Modo Interativo (com Menus e Seletores)
+### 1. Interactive Mode (Menus and Selectors)
 
-Se nenhum argumento for passado e o terminal for interativo (TTY), a aplicação inicia um assistente interativo guiado pelo `Spectre.Console`:
+If no arguments are provided and the terminal is an interactive TTY, the application starts an interactive wizard powered by `Spectre.Console`:
 
 ```bash
 dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli
 ```
 
-No modo interativo você pode:
-- Escolher entre prompts de teste pré-definidos (Programação C# .NET 10, Análise Arquitetural, Tradução Técnica) ou digitar livremente um prompt customizado.
-- Selecionar com a barra de espaço quais provedores deseja incluir na rodada.
-- Definir o `max_tokens` de saída desejado.
-- Repetir novas rodadas consecutivas sem sair da aplicação.
+In interactive mode you can:
+- Choose from predefined test prompts (C# .NET 10 Programming, Architectural Analysis, Technical Translation) or type a custom prompt.
+- Use the spacebar to select which providers to benchmark in the current round.
+- Set the desired output `max_tokens`.
+- Run consecutive rounds without leaving the application.
 
 ---
 
-### 2. Modo Não-Interativo / Linha de Comando (CI/CD ou Automação)
+### 2. Non-Interactive / CLI Mode (CI/CD or Automation)
 
-Ideal para scripts, pipelines de CI ou comparações rápidas:
+Ideal for scripting, CI pipelines, or quick comparisons:
 
 ```bash
-dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [argumentos]
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [arguments]
 ```
 
-#### Tabela de Argumentos da CLI:
+#### CLI Arguments Table:
 
-| Argumento | Forma Curta | Descrição | Valor Padrão | Exemplo |
+| Argument | Short Flag | Description | Default Value | Example |
 | :--- | :--- | :--- | :--- | :--- |
-| `--prompt <texto>` | `-p` | Texto do prompt a ser enviado aos modelos | Pergunta pré-definida de C# 14 | `-p "Explique Clean Architecture"` |
-| `--providers <lista>` | *(nenhuma)* | Provedores separados por vírgula | `Simulated` (+ provedores ativos) | `--providers Ollama,Simulated` |
-| `--max-tokens <num>` | `-m` | Limite máximo de tokens de saída | `300` | `-m 200` |
-| `--help` | `-h` | Exibe a tela de ajuda da aplicação | *(nenhum)* | `--help` |
+| `--prompt <text>` | `-p` | Prompt text to send to models | Predefined C# 14 question | `-p "Explain Clean Architecture"` |
+| `--providers <list>` | *(none)* | Comma-separated list of providers | `Simulated` (+ active providers) | `--providers Ollama,Simulated` |
+| `--max-tokens <num>` | `-m` | Maximum output token limit | `300` | `-m 200` |
+| `--help` | `-h` | Display the application help screen | *(none)* | `--help` |
 
-#### Provedores Suportados na flag `--providers`:
-- `Simulated`: Motor embutido offline (mock determinístico de alta fidelidade; não requer internet ou chaves de API).
-- `Ollama`: Motor local via API compatível OpenAI (ex: `http://localhost:11434/v1` com modelo local, e.g., `llama3.2:3b`, `phi4`).
-- `OpenAi`: API da OpenAI (utiliza a chave configurada em `appsettings.json` ou variável de ambiente).
-- `AzureOpenAi`: Recurso Azure OpenAI Service (utiliza endpoint e chave de implantação).
-- `Gemini`: Google Gemini via endpoint OpenAI-compatible (`https://generativelanguage.googleapis.com/v1beta/openai/`).
-- `Grok`: xAI Grok via endpoint OpenAI-compatible (`https://api.x.ai/v1`).
-- *Qualquer outro provedor*: Qualquer provedor cadastrado na lista `Providers` do `appsettings.json` com `AiProviderName` pode ser referenciado diretamente pelo seu nome!
+#### Supported Providers in the `--providers` Flag:
+- `Simulated`: Built-in offline engine (high-fidelity deterministic mock; requires no internet connection or API keys).
+- `Ollama`: Local inference engine via OpenAI-compatible API (e.g., `http://localhost:11434/v1` running models such as `llama3.2:3b`, `phi4`).
+- `OpenAi`: OpenAI API (uses the API key configured in `appsettings.json` or environment variable).
+- `AzureOpenAi`: Azure OpenAI Service resource (uses endpoint and deployment key).
+- `Gemini`: Google Gemini via OpenAI-compatible endpoint (`https://generativelanguage.googleapis.com/v1beta/openai/`).
+- `Grok`: xAI Grok via OpenAI-compatible endpoint (`https://api.x.ai/v1`).
+- *Any other provider*: Any provider configured in the `Providers` list of `appsettings.json` with an `AiProviderName` can be referenced directly by name!
 
 ---
 
-### Exemplos Práticos de Execução
+### Practical Execution Examples
 
-#### Exemplo A: Testar Provedores Locais e Offline (Ollama e Simulado)
+#### Example A: Test Local and Offline Providers (Ollama and Simulated)
 ```bash
 dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --providers Ollama,Simulated --max-tokens 200
 ```
 
-#### Exemplo B: Executar com Prompt Customizado
+#### Example B: Run with a Custom Prompt
 ```bash
-dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- -p "Escreva um exemplo de padrão Factory em C# 14 com pattern matching." --providers Simulated,OpenAi -m 250
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- -p "Write an example of the Factory pattern in C# 14 with pattern matching." --providers Simulated,OpenAi -m 250
 ```
 
-#### Exemplo C: Exibir a Ajuda da CLI
+#### Example C: Display CLI Help
 ```bash
 dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --help
 ```
 
 ---
 
-## ⚙️ Configuração dos Provedores (`appsettings.json`)
+## ⚙️ Provider Configuration (`appsettings.json`)
 
-As configurações de conexão e modelos residem em `src/AiProviderBenchmarker.Cli/appsettings.json` e podem ser sobrescritas por Variáveis de Ambiente:
+Connection and model settings are located in `src/AiProviderBenchmarker.Cli/appsettings.json` and can be overridden via Environment Variables:
 
 ```json
 {
@@ -195,47 +195,47 @@ As configurações de conexão e modelos residem em `src/AiProviderBenchmarker.C
 }
 ```
 
-> 💡 **Nota sobre Resiliência**: Se a chave do AI Provider não for preenchida, a aplicação aciona de forma transparente o **Fallback Simulado**, permitindo que você execute e demonstre a ferramenta sem erros inesperados.
+> 💡 **Resilience Note**: If an AI Provider key is empty or not configured, the application transparently activates the **Simulated Fallback**, allowing you to run and demo the tool without unexpected errors.
 
 ---
 
-## 📊 Entendendo as Métricas do Relatório
+## 📊 Understanding Benchmark Report Metrics
 
-Ao término de cada rodada, a aplicação gera uma tabela consolidada com as seguintes colunas:
+At the end of each round, the application produces a consolidated table with the following columns:
 
-| Métrica | Significado e Cálculo |
+| Metric | Meaning and Calculation |
 | :--- | :--- |
-| **Status** | Indica `✔ OK` para execuções bem-sucedidas ou `✖ Falha` caso o provedor tenha retornado erro (timeout, credencial ausente, etc.). |
-| **TTFT** | **Time To First Token**: Cronometrado desde o envio da requisição até a recepção do primeiro fragmento de streaming (`update.Text`). |
-| **Latência** | Duração total de ponta a ponta da execução da chamada. |
-| **Tokens E/S** | Tokens estimados de Entrada (Input Prompt) e de Saída (Output Completion). |
-| **TPS (Tokens/s)** | Throughput real de geração: $$\text{TPS} = \frac{\text{Tokens de Saída}}{\text{Latência Total} - \text{TTFT}}$$ |
-| **Custo ($ USD)** | Estimativa monetária baseada na tabela oficial por 1 milhão de tokens. Provedores locais como **Ollama** sempre reportam `$0.000000`. |
+| **Status** | Shows `✔ OK` for successful runs or `✖ Failed` if the provider returned an error (timeout, missing credentials, etc.). |
+| **TTFT** | **Time To First Token**: Measured from request dispatch until the arrival of the first streaming chunk (`update.Text`). |
+| **Latency** | Total end-to-end duration of the invocation. |
+| **Tokens I/O** | Estimated Input Tokens (prompt) and Output Tokens (completion). |
+| **TPS (Tokens/s)** | Real generation throughput: $$\text{TPS} = \frac{\text{Output Tokens}}{\text{Total Latency} - \text{TTFT}}$$ |
+| **Cost ($ USD)** | Monetary estimate based on the official rate per 1 million tokens. Local providers such as **Ollama** always report `$0.000000`. |
 
-Abaixo da tabela, a CLI exibe:
-- **Prévia das Respostas**: Árvore com os primeiros caracteres da resposta sintetizada de cada modelo.
-- **Pódio do Benchmark**: Cartões destacando o campeão de menor TTFT (velocidade inicial), o campeão de maior Throughput (taxa de geração) e a opção mais econômica em custos (FinOps).
+Below the table, the CLI displays:
+- **Response Preview**: Tree view displaying the first characters of each model's synthesized response.
+- **Benchmark Podium**: Highlight cards displaying the lowest TTFT winner (fastest start), the highest Throughput winner (fastest generation rate), and the most economical option (FinOps champion).
 
 ---
 
-## 🧪 Suíte de Testes Automatizados
+## 🧪 Automated Test Suite
 
-A suíte de testes unitários foi desenvolvida com **xUnit**, **FluentAssertions** e **NSubstitute**:
+The unit test suite was built with **xUnit**, **FluentAssertions**, and **NSubstitute**:
 
 ```bash
-# Executa todos os testes unitários da solução
+# Run all unit tests in the solution
 dotnet test src/Module01/AiProviderBenchmarker/AiProviderBenchmarker.slnx
 ```
 
-### O que os testes cobrem:
+### What the Tests Cover:
 1. **`ProviderMetricTests`**:
-   - Valida o cálculo exato de TPS expurgando o TTFT da latência total.
-   - Trata cenários de borda como zero tokens ou TTFT superior ao tempo total sem gerar divisão por zero.
+   - Validates accurate TPS calculation excluding TTFT from total latency.
+   - Handles edge cases such as zero tokens or TTFT exceeding total time without division by zero.
 2. **`CostEstimatorTests`**:
-   - Valida os custos ponderados para modelos OpenAI (`gpt-4o`, `gpt-4o-mini`, etc.).
-   - Garante que inferências no **Ollama** sempre retornem custo zero ($0.00).
-   - Valida o fallback de custo para modelos customizados não catalogados.
+   - Validates weighted cost estimations for OpenAI models (`gpt-4o`, `gpt-4o-mini`, etc.).
+   - Asserts that local **Ollama** inferences always evaluate to zero cost ($0.00).
+   - Validates fallback cost calculation for uncataloged custom models.
 3. **`RunBenchmarkHandlerTests`**:
-   - Testa a orquestração simultânea de múltiplos provedores via `Task.WhenAll`.
-   - Valida o **isolamento de falhas**: se um provedor lançar `HttpRequestException` ou timeout, ele é marcado como falha individual, enquanto os outros provedores continuam executando e geram métricas de sucesso com integridade.
-   - Testa a notificação em tempo real via canal de progresso (`IProgress<T>`).
+   - Tests simultaneous multi-provider orchestration using `Task.WhenAll`.
+   - Validates **fault isolation**: if a provider throws an `HttpRequestException` or times out, it is flagged as an individual failure while remaining providers continue execution and yield intact success metrics.
+   - Tests real-time streaming progress notifications via `IProgress<T>`.
