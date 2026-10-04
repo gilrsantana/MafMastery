@@ -3,7 +3,7 @@ using AiProviderBenchmarker.Domain.Model;
 namespace AiProviderBenchmarker.Application.UseCases;
 
 /// <summary>
-/// Contrato do caso de uso de execução e medição do benchmark simultâneo.
+/// Use case contract for executing and benchmarking multiple AI providers concurrently.
 /// </summary>
 public interface IRunBenchmarkUseCase
 {

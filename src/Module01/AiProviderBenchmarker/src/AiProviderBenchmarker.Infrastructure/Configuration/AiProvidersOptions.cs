@@ -1,31 +1,31 @@
 namespace AiProviderBenchmarker.Infrastructure.Configuration;
 
 /// <summary>
-/// Opções raiz para configuração dos provedores de IA.
-/// Utiliza uma lista flexível de provedores onde cada um define sua propriedade AiProviderName.
+/// Root options for AI providers configuration.
+/// Uses a flexible list of providers where each defines its own AiProviderName.
 /// </summary>
 public class AiProvidersOptions
 {
     public const string SectionName = "AiProviders";
 
     /// <summary>
-    /// Lista de provedores configurados no sistema.
-    /// Permite cadastrar múltiplos modelos/endpoints do mesmo tipo (ex: dois modelos de OpenAI ou Ollama).
+    /// List of providers configured in the system.
+    /// Allows registering multiple models/endpoints of the same type (e.g., two OpenAI or Ollama models).
     /// </summary>
     public List<AiProviderConfig> Providers { get; set; } = [];
 
     /// <summary>
-    /// Obtém a configuração correspondente à chave composta (Provider:Model), modelo/implantação ou nome do provedor informado.
+    /// Gets the configuration matching the composite key (Provider:Model), model/deployment name, or provider name.
     /// </summary>
     public AiProviderConfig? GetProvider(string key)
     {
         if (string.IsNullOrWhiteSpace(key)) return null;
 
-        // 1. Busca por correspondência exata de Key (ex: "OpenAi:gpt-4o-mini", "AzureOpenAi:gpt-4o-mini")
+        // 1. Exact match on Key (e.g., "OpenAi:gpt-4o-mini", "AzureOpenAi:gpt-4o-mini")
         var byKey = Providers.FirstOrDefault(p => p.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
         if (byKey != null) return byKey;
 
-        // 2. Se a chave estiver em formato composto com separador (ex: "OpenAi:gpt-4o-mini" ou "OpenAi (gpt-4o-mini)")
+        // 2. If the key is formatted with delimiters (e.g., "OpenAi:gpt-4o-mini" or "OpenAi (gpt-4o-mini)")
         if (key.Contains(':') || key.Contains('/') || key.Contains('('))
         {
             var parts = key.Split([':', '/', '(', ')'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -40,11 +40,11 @@ public class AiProvidersOptions
             }
         }
 
-        // 3. Busca por DeploymentName (apenas se for único entre os provedores)
+        // 3. Search by DeploymentName (only if unique among providers)
         var matchingDeployments = Providers.Where(p => p.DeploymentName.Equals(key, StringComparison.OrdinalIgnoreCase)).ToList();
         if (matchingDeployments.Count == 1) return matchingDeployments[0];
 
-        // 4. Busca por AiProviderName
+        // 4. Search by AiProviderName
         var byProviderName = Providers.FirstOrDefault(p => p.AiProviderName.Equals(key, StringComparison.OrdinalIgnoreCase));
         if (byProviderName != null) return byProviderName;
 
@@ -52,7 +52,7 @@ public class AiProvidersOptions
     }
 
     /// <summary>
-    /// Obtém a configuração buscando explicitamente por Nome de Provedor E Nome de Implantação/Modelo.
+    /// Gets configuration by explicitly searching by Provider Name AND Deployment/Model Name.
     /// </summary>
     public AiProviderConfig? GetProvider(string providerName, string modelName)
     {
@@ -71,7 +71,7 @@ public class AiProvidersOptions
     }
 
     /// <summary>
-    /// Resolve uma lista de nomes/chaves de modelos para as respectivas configurações de provedores.
+    /// Resolves a collection of model names or keys to their respective provider configurations.
     /// </summary>
     public List<AiProviderConfig> ResolveProviders(IEnumerable<string> keysOrNames)
     {
@@ -83,7 +83,7 @@ public class AiProvidersOptions
             var config = GetProvider(item);
             if (config != null)
             {
-                // Se item é exatamente o nome de um provedor genérico (ex: "Gemini" ou "OpenAi"), inclui todas as configurações ativas daquele provedor
+                // If item matches a generic provider name (e.g., "Gemini" or "OpenAi"), include all active configurations for that provider
                 if (item.Equals(config.AiProviderName, StringComparison.OrdinalIgnoreCase))
                 {
                     var matchingProviders = Providers.Where(p => p.AiProviderName.Equals(item, StringComparison.OrdinalIgnoreCase) && p.IsConfigured).ToList();

@@ -1,7 +1,7 @@
 namespace AiProviderBenchmarker.Domain.Model;
 
 /// <summary>
-/// Value Object que encapsula o custo por 1 Milhão de tokens de entrada e saída.
+/// Value Object encapsulating the cost per 1 Million input and output tokens.
 /// </summary>
 public record ModelPricing(
     string ModelName,

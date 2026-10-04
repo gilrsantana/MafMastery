@@ -5,7 +5,7 @@ using Microsoft.Extensions.AI;
 namespace AiProviderBenchmarker.Infrastructure.Factories.Strategies;
 
 /// <summary>
-/// Estratégia responsável por criar clientes simulados sintéticos (offline determinístico ou fallback por falta de credenciais).
+/// Strategy responsible for creating synthetic simulated clients (deterministic offline mock or missing-credentials fallback).
 /// </summary>
 public class SimulatedClientStrategy : IChatClientStrategy
 {
@@ -32,9 +32,9 @@ public class SimulatedClientStrategy : IChatClientStrategy
                 tokensPerSecond: config.TokensPerSecond ?? 50);
         }
 
-        // Fallback simulado para provedores reais sem credenciais
+        // Simulated fallback for real providers without configured credentials
         return new SimulatedChatClient(
-            modelId: $"{config.AiProviderName} (Simulado)",
+            modelId: $"{config.AiProviderName} (Simulated)",
             minTtftMs: config.MinTtftMs ?? 220,
             maxTtftMs: config.MaxTtftMs ?? 390,
             tokensPerSecond: config.TokensPerSecond ?? 60);

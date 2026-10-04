@@ -3,7 +3,7 @@ using AiProviderBenchmarker.Domain.Model;
 namespace AiProviderBenchmarker.Domain.Services;
 
 /// <summary>
-/// Contrato de serviço de domínio para estimativa de custos de inferência (FinOps).
+/// Domain service contract for inference cost estimation (FinOps).
 /// </summary>
 public interface ICostEstimator
 {

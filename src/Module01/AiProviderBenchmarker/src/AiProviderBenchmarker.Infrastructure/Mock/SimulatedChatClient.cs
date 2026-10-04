@@ -4,8 +4,8 @@ using Microsoft.Extensions.AI;
 namespace AiProviderBenchmarker.Infrastructure.Mock;
 
 /// <summary>
-/// Implementação customizada de IChatClient que simula a latência, TTFT e streaming de um modelo de linguagem real.
-/// Permite testar toda a infraestrutura, resiliência e CLI offline sem depender de chaves de API pagas.
+/// Custom implementation of IChatClient that simulates real-world LLM latency, TTFT, and streaming behavior.
+/// Enables full offline testing of resilience, metrics, and CLI workflows without requiring paid API keys.
 /// </summary>
 public class SimulatedChatClient : IChatClient
 {
@@ -49,7 +49,7 @@ public class SimulatedChatClient : IChatClient
         ChatOptions? options = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        // Simula TTFT (Time To First Token)
+        // Simulate TTFT (Time To First Token)
         var ttft = Rnd.Next(_minTtftMs, _maxTtftMs);
         await Task.Delay(ttft, cancellationToken).ConfigureAwait(false);
 
@@ -82,15 +82,15 @@ public class SimulatedChatClient : IChatClient
 
     public void Dispose()
     {
-        // Sem recursos não gerenciados
+        // No unmanaged resources
         GC.SuppressFinalize(this);
     }
 
     private static string GenerateSimulatedResponse(string prompt)
     {
-        return $"[Resposta Sintetizada via {_modelStaticId}]: Analisando sua solicitação: \"{Truncate(prompt, 60)}\". " +
-               "Com base nos princípios de Clean Architecture e SOLID, a separação do pipeline de inferência " +
-               "permite alta manutenibilidade, isolamento de custos de FinOps e resiliência a falhas de provedores externos.";
+        return $"[Synthesized Response via {_modelStaticId}]: Analyzing your request: \"{Truncate(prompt, 60)}\". " +
+               "Based on Clean Architecture and SOLID principles, decoupling the inference pipeline " +
+               "enables high maintainability, FinOps cost isolation, and resilience against external provider outages.";
     }
 
     private const string _modelStaticId = "SimulatedEngine";

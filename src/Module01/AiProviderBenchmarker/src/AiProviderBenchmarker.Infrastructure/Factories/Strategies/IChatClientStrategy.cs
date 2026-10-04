@@ -4,17 +4,17 @@ using Microsoft.Extensions.AI;
 namespace AiProviderBenchmarker.Infrastructure.Factories.Strategies;
 
 /// <summary>
-/// Contrato de estratégia para instanciação de clientes IChatClient especializados por tipo ou protocolo de IA.
+/// Strategy contract for creating specialized IChatClient adapters based on AI provider type or protocol.
 /// </summary>
 public interface IChatClientStrategy
 {
     /// <summary>
-    /// Avalia se a estratégia sabe lidar com a configuração do provedor informado.
+    /// Evaluates whether the strategy can handle the given provider configuration.
     /// </summary>
     bool CanHandle(AiProviderConfig config);
 
     /// <summary>
-    /// Cria o cliente IChatClient devidamente configurado.
+    /// Creates the configured IChatClient instance.
     /// </summary>
     IChatClient CreateClient(AiProviderConfig config);
 }

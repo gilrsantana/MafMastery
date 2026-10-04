@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace AiProviderBenchmarker.Infrastructure.Factories;
 
 /// <summary>
-/// Fábrica desacoplada e dinâmica de adaptadores IChatClient baseada no Padrão Strategy.
+/// Decoupled, dynamic factory for IChatClient adapters based on the Strategy Pattern.
 /// </summary>
 public class ChatClientFactory : IChatClientFactory
 {
@@ -33,7 +33,7 @@ public class ChatClientFactory : IChatClientFactory
         var config = _options.GetProvider(providerName);
         if (config == null)
         {
-            return new SimulatedChatClient($"{providerName} (Simulado)", minTtftMs: 200, maxTtftMs: 400, tokensPerSecond: 50);
+            return new SimulatedChatClient($"{providerName} (Simulated)", minTtftMs: 200, maxTtftMs: 400, tokensPerSecond: 50);
         }
 
         return CreateClient(config);
@@ -44,7 +44,7 @@ public class ChatClientFactory : IChatClientFactory
         ArgumentNullException.ThrowIfNull(config);
 
         var strategy = _strategies.FirstOrDefault(s => s.CanHandle(config))
-            ?? throw new NotSupportedException($"Nenhuma estratégia compatível encontrada para o provedor '{config.AiProviderName}'.");
+            ?? throw new NotSupportedException($"No compatible strategy found for provider '{config.AiProviderName}'.");
 
         return strategy.CreateClient(config);
     }
@@ -66,7 +66,7 @@ public class ChatClientFactory : IChatClientFactory
     {
         var config = _options.GetProvider(providerName);
         if (config == null) 
-            return $"{providerName} (Simulado)";
+            return $"{providerName} (Simulated)";
 
         if (config.AiProviderName.Equals("Simulated", StringComparison.OrdinalIgnoreCase))
         {
@@ -75,7 +75,7 @@ public class ChatClientFactory : IChatClientFactory
                 : "simulated-fast-llm";
         }
 
-        return config.IsConfigured ? config.DeploymentName : $"{providerName} (Simulado)";
+        return config.IsConfigured ? config.DeploymentName : $"{providerName} (Simulated)";
     }
 
     public IReadOnlyList<string> GetConfiguredProviders()

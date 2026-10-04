@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace AiProviderBenchmarker.Infrastructure.Pricing;
 
 /// <summary>
-/// Estimador oficial de custos de inferência (FinOps) baseado nas configurações centralizadas dos provedores (appsettings.json).
+/// Official inference cost estimator (FinOps) based on centralized provider settings (appsettings.json).
 /// </summary>
 public class CostEstimator : ICostEstimator
 {
@@ -34,18 +34,18 @@ public class CostEstimator : ICostEstimator
 
     public ModelPricing? GetPricing(string provider, string modelName)
     {
-        // 1. Busca por correspondência exata de DeploymentName
+        // 1. Match by exact DeploymentName
         var config = _options.Providers.FirstOrDefault(p =>
             !string.IsNullOrWhiteSpace(p.DeploymentName) &&
             p.DeploymentName.Equals(modelName, StringComparison.OrdinalIgnoreCase));
 
-        // 2. Busca por modelo via GetProvider (checa modelo e depois provedor)
+        // 2. Lookup via GetProvider (checks model and then provider)
         config ??= _options.GetProvider(modelName);
 
-        // 3. Busca por nome do provedor
+        // 3. Lookup by provider name
         config ??= _options.GetProvider(provider);
 
-        // 4. Se não encontrar, busca por contência de modelo
+        // 4. Fallback search by model containment
         config ??= _options.Providers.FirstOrDefault(p =>
             !string.IsNullOrWhiteSpace(p.DeploymentName) &&
             (!string.IsNullOrWhiteSpace(modelName) && modelName.Contains(p.DeploymentName, StringComparison.OrdinalIgnoreCase)));
@@ -58,7 +58,7 @@ public class CostEstimator : ICostEstimator
                 OutputPricePerMillionUsd: config.OutputPricePerMillion);
         }
 
-        // Fallback padrão se o provedor/modelo não estiver cadastrado ($0.50 / $1.50)
+        // Default conservative fallback if provider/model is not registered ($0.50 / $1.50)
         return new ModelPricing(modelName, 0.50m, 1.50m);
     }
 }

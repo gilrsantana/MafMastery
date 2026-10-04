@@ -6,7 +6,7 @@ using Microsoft.Extensions.AI;
 namespace AiProviderBenchmarker.Infrastructure.Factories.Strategies;
 
 /// <summary>
-/// Estratégia responsável por criar clientes especializados para o Azure OpenAI Service.
+/// Strategy responsible for creating specialized clients for Azure OpenAI Service.
 /// </summary>
 public class AzureOpenAiClientStrategy : IChatClientStrategy
 {

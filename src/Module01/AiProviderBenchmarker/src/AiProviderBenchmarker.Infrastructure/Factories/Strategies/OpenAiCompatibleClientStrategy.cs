@@ -6,14 +6,14 @@ using OpenAI;
 namespace AiProviderBenchmarker.Infrastructure.Factories.Strategies;
 
 /// <summary>
-/// Estratégia responsável por criar clientes OpenAI padrão e compatíveis com a API OpenAI /v1 (Ollama, Gemini, Grok, etc.).
+/// Strategy responsible for creating standard OpenAI clients and OpenAI /v1 API-compatible clients (Ollama, Gemini, Grok, etc.).
 /// </summary>
 public class OpenAiCompatibleClientStrategy : IChatClientStrategy
 {
     public bool CanHandle(AiProviderConfig config)
     {
         ArgumentNullException.ThrowIfNull(config);
-        // Atende qualquer provedor que utilize o protocolo HTTP /v1 da OpenAI
+        // Handles any provider adhering to OpenAI's HTTP /v1 protocol
         return true;
     }
 
@@ -21,7 +21,7 @@ public class OpenAiCompatibleClientStrategy : IChatClientStrategy
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        // Se possuir endpoint customizado (ex: Ollama localhost, Gemini OpenAI gateway, Grok api.x.ai, etc.)
+        // If custom endpoint is present (e.g., Ollama localhost, Gemini OpenAI gateway, Grok api.x.ai, etc.)
         if (!string.IsNullOrWhiteSpace(config.Endpoint))
         {
             var clientOptions = new OpenAIClientOptions
@@ -33,7 +33,7 @@ public class OpenAiCompatibleClientStrategy : IChatClientStrategy
             return customClient.GetChatClient(config.DeploymentName).AsIChatClient();
         }
 
-        // Endpoint padrão oficial da OpenAI (api.openai.com)
+        // Official default OpenAI endpoint (api.openai.com)
         var defaultClient = new OpenAIClient(config.ApiKey);
         return defaultClient.GetChatClient(config.DeploymentName).AsIChatClient();
     }

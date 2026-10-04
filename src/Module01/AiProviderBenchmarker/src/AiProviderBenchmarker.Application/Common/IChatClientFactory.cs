@@ -3,7 +3,7 @@ using Microsoft.Extensions.AI;
 namespace AiProviderBenchmarker.Application.Common;
 
 /// <summary>
-/// Fábrica desacoplada para instanciação de clientes que implementam IChatClient.
+/// Decoupled factory for instantiating clients implementing IChatClient.
 /// </summary>
 public interface IChatClientFactory
 {

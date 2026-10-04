@@ -1,7 +1,7 @@
 namespace AiProviderBenchmarker.Domain.Model;
 
 /// <summary>
-/// Registra os dados empíricos de telemetria, SLA e custos de uma inferência de IA.
+/// Records empirical telemetry, SLA, and cost metrics for an AI model inference.
 /// </summary>
 public record ProviderMetric(
     string Provider,
@@ -16,7 +16,7 @@ public record ProviderMetric(
     string? ErrorMessage = null)
 {
     /// <summary>
-    /// Taxa de geração líquida (Tokens Por Segundo), descontando o tempo de pré-processamento de prompt (TTFT).
+    /// Net generation rate (Tokens Per Second), excluding prompt preprocessing time (TTFT).
     /// </summary>
     public double TokensPerSecond
     {

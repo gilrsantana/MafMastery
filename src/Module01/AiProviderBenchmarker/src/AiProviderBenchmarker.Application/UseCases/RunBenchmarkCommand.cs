@@ -3,7 +3,7 @@ using Microsoft.Extensions.AI;
 namespace AiProviderBenchmarker.Application.UseCases;
 
 /// <summary>
-/// DTO com os parâmetros necessários para execução do benchmark de IA.
+/// Command DTO containing parameters for running an AI benchmark.
 /// </summary>
 public record RunBenchmarkCommand(
     string Prompt,

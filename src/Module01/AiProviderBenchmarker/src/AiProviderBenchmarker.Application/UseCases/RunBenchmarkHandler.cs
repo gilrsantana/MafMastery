@@ -8,7 +8,7 @@ using Microsoft.Extensions.AI;
 namespace AiProviderBenchmarker.Application.UseCases;
 
 /// <summary>
-/// Implementação do caso de uso de benchmark de IA com execução paralela, medição de TTFT e resiliência.
+/// AI benchmark use case implementation featuring parallel execution, TTFT measurement, and fault isolation.
 /// </summary>
 public class RunBenchmarkHandler : IRunBenchmarkUseCase
 {
@@ -71,7 +71,7 @@ public class RunBenchmarkHandler : IRunBenchmarkUseCase
                 new(ChatRole.User, prompt)
             };
 
-            // Clona as opções para evitar mutações concorrentes entre clientes
+            // Clone options to prevent concurrent mutations across clients
             var providerOptions = CloneOptions(options);
 
             await foreach (var update in client.GetStreamingResponseAsync(messages, providerOptions, cancellationToken).ConfigureAwait(false))
@@ -92,7 +92,7 @@ public class RunBenchmarkHandler : IRunBenchmarkUseCase
             var totalDuration = stopwatch.Elapsed;
             var finalTtft = timeToFirstToken ?? totalDuration;
 
-            // Estimativa de tokens caso o adaptador não tenha retornado metadados exatos no streaming
+            // Token estimation fallback if adapter did not return exact usage metadata in streaming
             var generatedText = accumulatedText.ToString();
             var inputTokens = reportedInputTokens > 0 ? reportedInputTokens : EstimateTokens(prompt);
             var outputTokens = reportedOutputTokens > 0 ? reportedOutputTokens : EstimateTokens(generatedText);
@@ -127,7 +127,7 @@ public class RunBenchmarkHandler : IRunBenchmarkUseCase
                 EstimatedCostUsd: 0m,
                 GeneratedTextSnippet: string.Empty,
                 Success: false,
-                ErrorMessage: "Operação cancelada pelo usuário.");
+                ErrorMessage: "Operation cancelled by user.");
         }
         catch (Exception ex)
         {
@@ -160,7 +160,7 @@ public class RunBenchmarkHandler : IRunBenchmarkUseCase
     }
 
     /// <summary>
-    /// Heurística padrão da indústria para estimativa de tokens em língua ocidental (aprox. 4 caracteres por token).
+    /// Industry standard heuristic for western language token estimation (~4 characters per token).
     /// </summary>
     private static int EstimateTokens(string text)
     {
