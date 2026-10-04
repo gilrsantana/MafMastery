@@ -8,7 +8,7 @@ using SmartRouter.Domain.Services;
 using SmartRouter.Domain.Strategies;
 
 /// <summary>
-/// Decorator de IChatClient que implementa roteamento dinâmico e resiliência com failover transparente.
+/// IChatClient decorator implementing dynamic routing and resilience with transparent failover.
 /// </summary>
 public class SmartRoutingChatClient : DelegatingChatClient
 {
@@ -39,7 +39,7 @@ public class SmartRoutingChatClient : DelegatingChatClient
         var messagesList = chatMessages.ToList();
         var decision = _routerStrategy.ResolveRoute(messagesList, options);
 
-        // Se a estratégia já indicar a rota Premium, envia diretamente para o Azure OpenAI
+        // If the strategy selected the Premium route, dispatch directly to the fallback client
         if (decision.SelectedTier == RouteTier.Premium)
         {
             var response = await _fallbackClient.GetResponseAsync(messagesList, options, cancellationToken);
@@ -49,7 +49,7 @@ public class SmartRoutingChatClient : DelegatingChatClient
             return response;
         }
 
-        // Rota Economy (OpenRouter): executa dentro do ResiliencePipeline do Polly v8
+        // Economy Route (OpenRouter): executes within Polly v8 ResiliencePipeline
         try
         {
             return await _resiliencePipeline.ExecuteAsync(
@@ -67,14 +67,14 @@ public class SmartRoutingChatClient : DelegatingChatClient
                     catch (Exception ex)
                     {
                         _healthTracker.RecordFailure(ProviderKind.EconomicProvider, ex);
-                        throw; // Re-lança para o Polly contabilizar na política de Circuit Breaker
+                        throw; // Re-throw so Polly can evaluate Circuit Breaker policy
                     }
                 },
                 cancellationToken);
         }
         catch (Exception)
         {
-            // Ocorreu falha, timeout ou circuito aberto no primário: aciona fallback transparente
+            // Failure, timeout, or open circuit on primary: trigger transparent fallback
             var fallbackResponse = await _fallbackClient.GetResponseAsync(messagesList, options, cancellationToken);
             EnsureAdditionalProperties(fallbackResponse);
             fallbackResponse.AdditionalProperties!["X-SmartRouter-Target"] = ProviderKind.PremiumProvider.ToString();
@@ -91,7 +91,7 @@ public class SmartRoutingChatClient : DelegatingChatClient
         var messagesList = chatMessages.ToList();
         var decision = _routerStrategy.ResolveRoute(messagesList, options);
 
-        // Se a rota for Premium ou o circuito do OpenRouter estiver aberto, transmite diretamente do Fallback
+        // If the route is Premium or the primary circuit is open, stream directly from Fallback
         if (decision.SelectedTier == RouteTier.Premium || _healthTracker.GetSnapshot(ProviderKind.EconomicProvider).IsCircuitOpen)
         {
             await foreach (var update in _fallbackClient.GetStreamingResponseAsync(messagesList, options, cancellationToken))
@@ -101,7 +101,7 @@ public class SmartRoutingChatClient : DelegatingChatClient
             yield break;
         }
 
-        // Tenta iniciar o stream do provedor primário
+        // Attempt to initiate primary provider stream
         IAsyncEnumerator<ChatResponseUpdate>? enumerator = null;
         var primaryFailed = false;
 
@@ -142,7 +142,7 @@ public class SmartRoutingChatClient : DelegatingChatClient
                     }
                     catch (Exception)
                     {
-                        // Falha abrupta no meio da transmissão
+                        // Sudden failure mid-stream
                         yield break;
                     }
                 } while (hasMore);
@@ -157,7 +157,7 @@ public class SmartRoutingChatClient : DelegatingChatClient
             }
         }
 
-        // Falha antes de emitir tokens: aciona fallback transparente
+        // Failure before token emission: trigger transparent fallback
         await foreach (var update in _fallbackClient.GetStreamingResponseAsync(messagesList, options, cancellationToken))
         {
             yield return update;

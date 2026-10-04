@@ -1,7 +1,7 @@
 namespace SmartRouter.Application.DTOs;
 
 /// <summary>
-/// DTO da resposta retornada pela Minimal API para invocações não-streaming.
+/// Response DTO returned by the Minimal API for non-streaming completions.
 /// </summary>
 public record ChatResponseDto(
     string ResponseText,

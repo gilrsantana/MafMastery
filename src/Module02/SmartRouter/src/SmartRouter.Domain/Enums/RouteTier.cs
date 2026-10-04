@@ -1,17 +1,17 @@
 namespace SmartRouter.Domain.Enums;
 
 /// <summary>
-/// Níveis de custo e capacidade para roteamento de modelos de IA.
+/// Cost and capability tiers for routing AI models.
 /// </summary>
 public enum RouteTier
 {
     /// <summary>
-    /// Modelos de baixo custo e alta velocidade (ex.: OpenRouter: DeepSeek Chat, Llama 3.3 70B).
+    /// Low-cost, high-speed models (e.g., OpenRouter: DeepSeek Chat, Llama 3.3 70B).
     /// </summary>
     Economic,
 
     /// <summary>
-    /// Modelos avançados de raciocínio corporativo (ex.: Azure OpenAI: GPT-4o, GPT-4o-mini).
+    /// Advanced reasoning enterprise models (e.g., Azure OpenAI: GPT-4o, GPT-4o-mini).
     /// </summary>
     Premium
 }

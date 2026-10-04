@@ -6,7 +6,7 @@ using SmartRouter.Domain.Models;
 using SmartRouter.Domain.Services;
 
 /// <summary>
-/// Rastreador thread-safe de métricas de saúde e transições de Circuit Breaker.
+/// Thread-safe tracker for health metrics and Circuit Breaker state transitions.
 /// </summary>
 public class ProviderHealthTracker : IProviderHealthTracker
 {

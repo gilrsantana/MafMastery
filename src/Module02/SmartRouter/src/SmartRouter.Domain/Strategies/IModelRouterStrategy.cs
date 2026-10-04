@@ -4,15 +4,15 @@ using Microsoft.Extensions.AI;
 using SmartRouter.Domain.Models;
 
 /// <summary>
-/// Contrato de domínio para a estratégia de seleção inteligente de rotas de modelos de IA.
+/// Domain contract for intelligent routing and model selection strategies.
 /// </summary>
 public interface IModelRouterStrategy
 {
     /// <summary>
-    /// Avalia a coleção de mensagens, o tamanho do contexto e as opções solicitadas para determinar a rota ideal.
+    /// Evaluates conversational messages, context volume, and caller options to resolve the optimal route.
     /// </summary>
-    /// <param name="messages">Histórico de mensagens conversacionais enviadas pelo cliente.</param>
-    /// <param name="options">Opções de chat (hiperparâmetros, propriedades adicionais).</param>
-    /// <returns>Decisão determinística contendo a rota e provedor recomendados.</returns>
+    /// <param name="messages">Chat message history supplied by the caller.</param>
+    /// <param name="options">Chat options (hyperparameters, explicit tier routing properties).</param>
+    /// <returns>Deterministic decision containing recommended route tier and target provider.</returns>
     RoutingDecision ResolveRoute(IEnumerable<ChatMessage> messages, ChatOptions? options = null);
 }

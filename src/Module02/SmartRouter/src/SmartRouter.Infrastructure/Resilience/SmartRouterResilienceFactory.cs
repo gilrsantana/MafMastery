@@ -8,12 +8,12 @@ using SmartRouter.Domain.Services;
 using SmartRouter.Infrastructure.Configuration;
 
 /// <summary>
-/// Fábrica de pipelines de resiliência baseada no Polly v8 com Zero Allocation.
+/// Resilience pipeline factory based on zero-allocation Polly v8.
 /// </summary>
 public static class SmartRouterResilienceFactory
 {
     /// <summary>
-    /// Cria o pipeline de resiliência combinando Timeout e Circuit Breaker para o provedor primário.
+    /// Creates the resilience pipeline combining Timeout and Circuit Breaker for the primary provider.
     /// </summary>
     public static ResiliencePipeline CreatePipeline(
         SmartRouterOptions options, 
@@ -23,13 +23,13 @@ public static class SmartRouterResilienceFactory
         ArgumentNullException.ThrowIfNull(healthTracker);
 
         return new ResiliencePipelineBuilder()
-            // 1. Timeout Estratégico para SLA de IA
+            // 1. Strategic Timeout for AI SLA enforcement
             .AddTimeout(new TimeoutStrategyOptions
             {
                 Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds),
                 OnTimeout = _ => default
             })
-            // 2. Circuit Breaker reativo com callbacks no IProviderHealthTracker
+            // 2. Reactive Circuit Breaker with telemetry callbacks to IProviderHealthTracker
             .AddCircuitBreaker(new CircuitBreakerStrategyOptions
             {
                 FailureRatio = options.CircuitBreakerFailureRatio,

@@ -1,32 +1,32 @@
 namespace SmartRouter.Application.DTOs;
 
 /// <summary>
-/// DTO da requisição de chat recebida pelos endpoints da Minimal API.
+/// Chat request DTO received by Minimal API endpoints.
 /// </summary>
 public record ChatRequestDto
 {
     /// <summary>
-    /// Histórico de mensagens da conversa.
+    /// Conversation message history.
     /// </summary>
     public List<ChatMessageDto> Messages { get; init; } = [];
 
     /// <summary>
-    /// Modelo explicitamente solicitado pelo consumidor (opcional; se omitido, o roteador determina automaticamente).
+    /// Explicit model requested by caller (optional; if omitted, the router determines automatically).
     /// </summary>
     public string? Model { get; init; }
 
     /// <summary>
-    /// Hiperparâmetro de temperatura para amostragem estocástica (opcional).
+    /// Temperature hyperparameter for stochastic sampling (optional).
     /// </summary>
     public float? Temperature { get; init; }
 
     /// <summary>
-    /// Quantidade máxima de tokens permitida na resposta gerada (opcional).
+    /// Maximum output token limit for generated completion (optional).
     /// </summary>
     public int? MaxTokens { get; init; }
 
     /// <summary>
-    /// Força uma categoria de rota: "Economy" ou "Premium" (opcional).
+    /// Force a route tier preference: "Economy" or "Premium" (optional).
     /// </summary>
     public string? RouteTierPreference { get; init; }
 }

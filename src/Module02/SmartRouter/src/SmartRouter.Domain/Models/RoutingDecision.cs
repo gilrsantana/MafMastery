@@ -3,12 +3,12 @@ namespace SmartRouter.Domain.Models;
 using SmartRouter.Domain.Enums;
 
 /// <summary>
-/// Representa a decisão determinística tomada pela estratégia de roteamento.
+/// Deterministic decision resolved by the model routing strategy.
 /// </summary>
-/// <param name="SelectedTier">Nível de rota escolhido (Economy ou Premium).</param>
-/// <param name="TargetProvider">Provedor de destino para onde a chamada é direcionada inicialmente.</param>
-/// <param name="ModelIdentifier">Identificador do modelo selecionado (ex.: deepseek/deepseek-chat ou gpt-4o-mini).</param>
-/// <param name="Reason">Justificativa técnica da escolha para logs e auditoria.</param>
+/// <param name="SelectedTier">Chosen route tier (Economic or Premium).</param>
+/// <param name="TargetProvider">Target provider to which the invocation is initially dispatched.</param>
+/// <param name="ModelIdentifier">Selected model identifier (e.g., deepseek/deepseek-chat or gpt-4o-mini).</param>
+/// <param name="Reason">Technical justification of the selection for auditing and logs.</param>
 public record RoutingDecision(
     RouteTier SelectedTier,
     ProviderKind TargetProvider,

@@ -5,7 +5,7 @@ using Microsoft.Extensions.AI;
 using SmartRouter.Domain.Enums;
 
 /// <summary>
-/// Cliente simulado de alta fidelidade para execução local offline e testes determinísticos.
+/// High-fidelity simulated client for local offline execution and deterministic testing.
 /// </summary>
 public class SimulatedProviderChatClient : IChatClient
 {
@@ -43,8 +43,8 @@ public class SimulatedProviderChatClient : IChatClient
             throw new HttpRequestException(_failureMessage ?? $"Simulated network outage on {ProviderDisplayName}");
         }
 
-        var promptSummary = chatMessages.LastOrDefault()?.Text ?? "(prompt vazio)";
-        var responseText = $"[Simulated {ProviderDisplayName} ({_defaultModel})] Resposta gerada com sucesso para: '{promptSummary}'";
+        var promptSummary = chatMessages.LastOrDefault()?.Text ?? "(empty prompt)";
+        var responseText = $"[Simulated {ProviderDisplayName} ({_defaultModel})] Response successfully generated for: '{promptSummary}'";
 
         var response = new ChatResponse(new ChatMessage(ChatRole.Assistant, responseText))
         {
@@ -70,13 +70,13 @@ public class SimulatedProviderChatClient : IChatClient
             throw new HttpRequestException(_failureMessage ?? $"Simulated streaming outage on {ProviderDisplayName}");
         }
 
-        var promptSummary = chatMessages.LastOrDefault()?.Text ?? "(prompt vazio)";
+        var promptSummary = chatMessages.LastOrDefault()?.Text ?? "(empty prompt)";
         var chunks = new[]
         {
             $"[Simulated {ProviderDisplayName}] ",
-            "Processando ",
-            "sua requisição ",
-            "de forma resiliente: ",
+            "Processing ",
+            "your request ",
+            "resiliently: ",
             $"'{promptSummary}'."
         };
 

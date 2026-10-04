@@ -11,7 +11,7 @@ using SmartRouter.Domain.Enums;
 using SmartRouter.Domain.Services;
 
 /// <summary>
-/// Implementação do serviço de aplicação que orquestra a execução de chat e métricas de gateway.
+/// Application service implementation orchestrating chat execution, resilience, and gateway telemetry.
 /// </summary>
 public class SmartRouterService : ISmartRouterService
 {
@@ -211,7 +211,7 @@ public class SmartRouterService : ISmartRouterService
         {
             ProviderKind.EconomicProvider => RouterServiceAiKey.Economic,
             ProviderKind.PremiumProvider => RouterServiceAiKey.Premium,
-            _ => throw new ArgumentOutOfRangeException(nameof(provider), provider, "Provedor não suportado.")
+            _ => throw new ArgumentOutOfRangeException(nameof(provider), provider, "Unsupported provider.")
         };
 
         return _serviceProvider.GetRequiredKeyedService<IChatClient>(serviceKey);

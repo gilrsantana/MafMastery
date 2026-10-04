@@ -4,37 +4,37 @@ using SmartRouter.Domain.Enums;
 using SmartRouter.Domain.Models;
 
 /// <summary>
-/// Contrato para rastreamento de saúde, eventos de circuit breaker e telemetria dos provedores.
+/// Contract for tracking provider health, circuit breaker state transitions, and invocation telemetry.
 /// </summary>
 public interface IProviderHealthTracker
 {
     /// <summary>
-    /// Notifica que uma chamada ao provedor foi concluída com sucesso.
+    /// Records a successfully completed provider invocation.
     /// </summary>
     void RecordSuccess(ProviderKind provider);
 
     /// <summary>
-    /// Notifica que uma chamada ao provedor falhou com uma exceção.
+    /// Records a failed provider invocation with its exception details.
     /// </summary>
     void RecordFailure(ProviderKind provider, Exception exception);
 
     /// <summary>
-    /// Notifica que o circuito foi aberto devido ao excesso de falhas.
+    /// Records a transition to the open circuit state due to excessive failure rate.
     /// </summary>
     void RecordCircuitOpened(ProviderKind provider, TimeSpan breakDuration);
 
     /// <summary>
-    /// Notifica que o circuito entrou em estado de teste (Half-Open).
+    /// Records a transition to the half-open state for canary trial probing.
     /// </summary>
     void RecordCircuitHalfOpened(ProviderKind provider);
 
     /// <summary>
-    /// Notifica que o circuito foi reestabelecido e fechado com sucesso.
+    /// Records that the circuit has recovered and transitioned back to closed.
     /// </summary>
     void RecordCircuitClosed(ProviderKind provider);
 
     /// <summary>
-    /// Obtém o instantâneo atual de saúde do provedor especificado.
+    /// Retrieves the current health snapshot for the specified provider.
     /// </summary>
     ProviderHealthSnapshot GetSnapshot(ProviderKind provider);
 }

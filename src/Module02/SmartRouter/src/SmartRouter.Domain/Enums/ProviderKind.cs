@@ -1,22 +1,22 @@
 namespace SmartRouter.Domain.Enums;
 
 /// <summary>
-/// Tipos de provedores de inferência de IA homologados no gateway.
+/// AI inference provider types supported by the gateway.
 /// </summary>
 public enum ProviderKind
 {
     /// <summary>
-    /// Provedor primário via agregador OpenRouter.
+    /// Primary provider via OpenRouter aggregator or local economy model.
     /// </summary>
     EconomicProvider,
 
     /// <summary>
-    /// Provedor secundário corporativo em nuvem privada Azure OpenAI.
+    /// Secondary enterprise provider hosted in private cloud (e.g., Azure OpenAI / Gemini).
     /// </summary>
     PremiumProvider,
 
     /// <summary>
-    /// Rota de contingência acionada por abertura de Circuit Breaker.
+    /// Contingency route triggered upon Circuit Breaker opening.
     /// </summary>
     FallbackCircuit
 }

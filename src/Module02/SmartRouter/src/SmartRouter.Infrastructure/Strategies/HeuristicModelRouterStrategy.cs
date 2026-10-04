@@ -8,7 +8,7 @@ using SmartRouter.Domain.Strategies;
 using SmartRouter.Infrastructure.Configuration;
 
 /// <summary>
-/// Estratégia de roteamento heurístico baseada no volume de caracteres do contexto e preferências explícitas.
+/// Heuristic routing strategy based on contextual character volume and explicit tier preferences.
 /// </summary>
 public class HeuristicModelRouterStrategy : IModelRouterStrategy
 {

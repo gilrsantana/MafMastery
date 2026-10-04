@@ -1,47 +1,47 @@
 namespace SmartRouter.Infrastructure.Configuration;
 
 /// <summary>
-/// Modelo universal de configuração de provedor de IA.
+/// Universal AI provider configuration model.
 /// </summary>
 public class AiProviderConfig
 {
     /// <summary>
-    /// Identificador do provedor (ex: OpenAi, AzureOpenAi, Ollama, Gemini, Grok, Simulated).
+    /// Provider identifier (e.g., OpenAi, AzureOpenAi, Ollama, Gemini, Grok, Simulated).
     /// </summary>
     public string AiProviderName { get; set; } = string.Empty;
 
     /// <summary>
-    /// URL base da API do provedor (opcional na OpenAI padrão, obrigatória em Azure/Ollama/Gemini/Gateways).
+    /// Base API URL of the provider (optional for standard OpenAI, required for Azure/Ollama/Gemini/gateways).
     /// </summary>
     public string Endpoint { get; set; } = string.Empty;
 
     /// <summary>
-    /// Chave de API de autenticação.
+    /// Authentication API key.
     /// </summary>
     public string ApiKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// Nome do modelo ou implantação (DeploymentName / ModelId).
+    /// Model or deployment identifier (DeploymentName / ModelId).
     /// </summary>
     public string DefaultModel { get; set; } = string.Empty;
     
     /// <summary>
-    /// Nome da aplicação base.
+    /// Base application name (e.g., for OpenRouter identification headers).
     /// </summary>
     public string AppTitle { get; set; } = string.Empty;
     
     /// <summary>
-    /// Endereço http base da aplicação.
+    /// Base application HTTP referrer URL.
     /// </summary>
     public string HttpReferer { get; set; } = string.Empty;
     
     /// <summary>
-    /// Identificação do Tier de Operação ("Economy" ou "Premium").
+    /// Operational tier flag (true for Premium, false for Economic).
     /// </summary>
     public bool PremiumTier { get; set; }
 
     /// <summary>
-    /// Valida se o provedor possui os campos mínimos necessários (Endpoint e ApiKey).
+    /// Validates whether the provider has minimum required configuration (Endpoint and ApiKey).
     /// </summary>
     public bool IsConfigured() => !string.IsNullOrWhiteSpace(ApiKey) && !string.IsNullOrWhiteSpace(Endpoint);
 }

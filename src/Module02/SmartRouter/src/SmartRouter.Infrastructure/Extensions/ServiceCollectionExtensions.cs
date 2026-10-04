@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
             .Bind(configuration.GetSection(SmartRouterOptions.SectionName))
             .Validate(
                 options => options.HasValidProviders(),
-                "SmartRouterOptions deve conter exatamente dois provedores configurados, sendo um PremiumTier (true) e o outro não (false).")
+                "SmartRouterOptions must contain exactly two configured providers, one with PremiumTier (true) and the other without (false).")
             .ValidateOnStart();
     }
 

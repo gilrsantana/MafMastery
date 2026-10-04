@@ -3,16 +3,16 @@ namespace SmartRouter.Domain.Models;
 using SmartRouter.Domain.Enums;
 
 /// <summary>
-/// Instantâneo do estado de saúde e telemetria do provedor monitorado pelo Circuit Breaker.
+/// Health state and telemetry snapshot of a provider monitored by Circuit Breaker.
 /// </summary>
-/// <param name="Provider">Provedor avaliado.</param>
-/// <param name="CircuitState">Nome do estado atual do circuito (Closed, Open, HalfOpen).</param>
-/// <param name="IsCircuitOpen">Indica se o circuito está aberto (bloqueando chamadas diretas).</param>
-/// <param name="ConsecutiveFailures">Quantidade de falhas acumuladas na janela amostral recente.</param>
-/// <param name="TotalSuccesses">Total de requisições concluídas com sucesso.</param>
-/// <param name="TotalFailures">Total de requisições que falharam.</param>
-/// <param name="LastFailureReason">Mensagem de erro da última exceção interceptada.</param>
-/// <param name="LastCheckedUtc">Horário UTC da última inspeção ou alteração de estado.</param>
+/// <param name="Provider">Evaluated provider.</param>
+/// <param name="CircuitState">Current circuit state name (Closed, Open, HalfOpen).</param>
+/// <param name="IsCircuitOpen">Indicates whether the circuit is open (blocking direct calls).</param>
+/// <param name="ConsecutiveFailures">Consecutive failure count accumulated in the current sampling window.</param>
+/// <param name="TotalSuccesses">Total requests successfully completed.</param>
+/// <param name="TotalFailures">Total requests that failed.</param>
+/// <param name="LastFailureReason">Error message of the last intercepted exception.</param>
+/// <param name="LastCheckedUtc">UTC timestamp of the latest health inspection or state change.</param>
 public record ProviderHealthSnapshot(
     ProviderKind Provider,
     string CircuitState,

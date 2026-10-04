@@ -4,30 +4,30 @@ using Microsoft.Extensions.AI;
 using SmartRouter.Application.DTOs;
 
 /// <summary>
-/// Contrato do serviço de aplicação que orquestra as chamadas conversacionais através do SmartRouter.
+/// Application service contract orchestrating conversational requests through SmartRouter.
 /// </summary>
 public interface ISmartRouterService
 {
     /// <summary>
-    /// Processa uma requisição de chat tradicional (monolítica), retornando o DTO completo de resposta e métricas.
+    /// Processes a standard chat request, returning the completed response DTO and gateway telemetry.
     /// </summary>
     Task<ChatResponseDto> CompleteChatAsync(ChatRequestDto request, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Processa uma requisição de chat reativa emitindo chunks de tokens via streaming assíncrono.
+    /// Processes a reactive chat request emitting streaming token updates.
     /// </summary>
     IAsyncEnumerable<ChatResponseUpdate> StreamChatAsync(ChatRequestDto request, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retorna o status de saúde e do circuit breaker do provedor monitorado.
+    /// Returns the health and circuit breaker status for monitored providers.
     /// </summary>
     CircuitStatusDto GetCircuitStatus();
 
     /// <summary>
-    /// Realiza uma verificação de saúde nos providers configurados.
+    /// Performs a health check on configured providers.
     /// </summary>
-    /// <param name="liveProbe">Indica se deve ser realizado um probe de latência.</param>
-    /// <param name="cancellationToken">Token de cancelamento.</param>
-    /// <returns>Report de saúde dos providers.</returns>
+    /// <param name="liveProbe">Indicates whether an active latency probe should be executed.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Health report covering all configured providers.</returns>
     Task<ProvidersHealthReportDto> CheckProvidersHealthAsync(bool liveProbe = false, CancellationToken cancellationToken = default);
 }
