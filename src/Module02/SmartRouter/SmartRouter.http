@@ -30,6 +30,8 @@ Accept: {{contentType}}
 GET {{SmartRouter_HostAddress}}/health/providers
 Accept: {{contentType}}
 
+###
+
 ### 1.5 Providers Live Health Report
 GET {{SmartRouter_HostAddress}}/health/providers?live=true
 Accept: {{contentType}}
@@ -48,7 +50,7 @@ Accept: {{contentType}}
   "messages": [
     {
       "role": "user",
-      "content": "Explique brevemente o padrão Circuit Breaker em microsserviços."
+      "content": "Briefly explain the Circuit Breaker pattern in microservices."
     }
   ]
 }
@@ -65,7 +67,7 @@ Accept: {{contentType}}
   "messages": [
     {
       "role": "user",
-      "content": "Por favor, analise detalhadamente a arquitetura de software descrita a seguir e aponte riscos de acoplamento, gargalos de escalabilidade e oportunidades de melhoria segundo os princípios do Domain-Driven Design (DDD) e Clean Architecture. Contexto da arquitetura: Nosso ecossistema possui um Gateway Minimal API em .NET 10 que gerencia múltiplos provedores de Large Language Models. Ele implementa uma estratégia heurística baseada no número de caracteres da requisição: prompts com menos de 1000 caracteres são direcionados para um provedor econômico de alta taxa de transferência e baixo custo, enquanto prompts que atingem ou excedem esse limiar são roteados automaticamente para provedores avançados de raciocínio profundo como o Gemini e modelos de alta capacidade. Além da heurística estática, a infraestrutura implementa um Circuit Breaker com amostragem contínua e failover automático caso o provedor primário sofra degradação de latência ou erros de rede. Como você estruturaria os bounded contexts e as camadas de aplicação para suportar auditoria de custos por token e resiliência reativa sem comprometer o throughput?"
+      "content": "Please analyze in detail the software architecture described below and highlight coupling risks, scalability bottlenecks, and improvement opportunities according to Domain-Driven Design (DDD) and Clean Architecture principles. Architectural context: Our ecosystem runs a .NET 10 Minimal API Gateway managing multiple Large Language Model providers. It implements a heuristic routing strategy based on request character volume: prompts under 1000 characters are dispatched to an economy high-throughput, low-cost provider, while prompts reaching or exceeding this threshold are automatically routed to advanced deep-reasoning providers such as Gemini and high-capacity models. In addition to static heuristics, the infrastructure features a Circuit Breaker with continuous sampling and automatic failover should the primary provider suffer latency degradation or network errors. How would you structure bounded contexts and application layers to support per-token cost auditing and reactive resilience without compromising overall throughput?"
     }
   ]
 }
@@ -83,7 +85,7 @@ Accept: {{contentType}}
   "messages": [
     {
       "role": "user",
-      "content": "Qual é a diferença entre IAsyncEnumerable e IEnumerable no C#?"
+      "content": "What is the difference between IAsyncEnumerable and IEnumerable in C#?"
     }
   ]
 }
@@ -101,7 +103,7 @@ Accept: {{contentType}}
   "messages": [
     {
       "role": "user",
-      "content": "Resuma a teoria da relatividade geral em uma única frase poética."
+      "content": "Summarize the theory of general relativity in a single poetic sentence."
     }
   ]
 }
@@ -122,7 +124,7 @@ Accept: {{contentType}}
   "messages": [
     {
       "role": "user",
-      "content": "Liste 3 boas práticas essenciais para implementação de APIs RESTful."
+      "content": "List 3 essential best practices for implementing RESTful APIs."
     }
   ]
 }
@@ -140,19 +142,19 @@ Accept: {{contentType}}
   "messages": [
     {
       "role": "system",
-      "content": "Você é um arquiteto de software sênior focado em Clean Architecture e boas práticas em .NET."
+      "content": "You are a senior software architect focused on Clean Architecture and .NET best practices."
     },
     {
       "role": "user",
-      "content": "Onde devem ficar as interfaces dos repositórios na Clean Architecture?"
+      "content": "Where should repository interfaces reside in Clean Architecture?"
     },
     {
       "role": "assistant",
-      "content": "As interfaces dos repositórios devem residir no núcleo da aplicação (Domain ou Application Core), garantindo que a camada de negócio não dependa de detalhes de infraestrutura."
+      "content": "Repository interfaces must reside in the application core (Domain or Application Core), ensuring business logic does not depend on infrastructure details."
     },
     {
       "role": "user",
-      "content": "E onde deve ficar a implementação concreta que usa EF Core?"
+      "content": "And where should the concrete implementation using EF Core be placed?"
     }
   ]
 }
@@ -171,7 +173,6 @@ Accept: {{contentType}}
 
 ###
 
-
 ###############################################################################
 # 3. STREAMING CHAT (POST /v1/chat/stream - Server-Sent Events)
 ###############################################################################
@@ -186,7 +187,7 @@ Accept: text/event-stream
   "messages": [
     {
       "role": "user",
-      "content": "Conte uma história curta sobre um robô que descobriu a música clássica."
+      "content": "Tell a short story about a robot that discovered classical music."
     }
   ]
 }
@@ -205,9 +206,7 @@ Accept: text/event-stream
   "messages": [
     {
       "role": "user",
-      "content": "Escreva um soneto sobre computação quântica e criptografia."
+      "content": "Write a sonnet about quantum computing and cryptography."
     }
   ]
 }
-
-###

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using SmartRouter.Application.DTOs;
 
 namespace SmartRouter.Tests.Endpoints;
@@ -12,7 +13,18 @@ public class GatewayIntegrationTests : IClassFixture<WebApplicationFactory<Progr
 
     public GatewayIntegrationTests(WebApplicationFactory<Program> factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((_, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["SmartRouter:Providers:0:ApiKey"] = "",
+                    ["SmartRouter:Providers:1:ApiKey"] = "",
+                    ["SmartRouter:UseSimulatedClientsIfUnconfigured"] = "true"
+                });
+            });
+        }).CreateClient();
     }
 
     [Fact]
@@ -51,7 +63,7 @@ public class GatewayIntegrationTests : IClassFixture<WebApplicationFactory<Progr
         {
             Messages = new List<ChatMessageDto>
             {
-                new("user", "Olá, preciso de um resumo rápido.")
+                new("user", "Hello, I need a quick summary.")
             }
         };
 
@@ -95,7 +107,7 @@ public class GatewayIntegrationTests : IClassFixture<WebApplicationFactory<Progr
         {
             Messages = new List<ChatMessageDto>
             {
-                new("user", "Teste de streaming reativo")
+                new("user", "Reactive streaming test")
             }
         };
 

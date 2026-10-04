@@ -135,6 +135,6 @@ public class SmartRouterOptionsValidationTests
 
         // Assert
         act.Should().Throw<OptionsValidationException>()
-            .WithMessage("*SmartRouterOptions deve conter exatamente dois provedores configurados, sendo um PremiumTier (true) e o outro não (false).*");
+            .WithMessage("*SmartRouterOptions must contain exactly two configured providers, one with PremiumTier (true) and the other without (false).*");
     }
 }

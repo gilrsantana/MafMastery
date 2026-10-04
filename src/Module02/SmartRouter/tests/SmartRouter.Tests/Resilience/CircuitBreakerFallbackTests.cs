@@ -16,7 +16,7 @@ public class CircuitBreakerFallbackTests
     [Fact]
     public async Task CircuitBreaker_Should_Trip_After_Consecutive_Failures_And_Fallback_Instantly()
     {
-        // Arrange: configuramos o circuit breaker com mínimo de 2 requisições e 50% de falha
+        // Arrange: configure circuit breaker with minimum 2 requests and 50% failure ratio
         var options = new SmartRouterOptions
         {
             CharacterThresholdForPremiumTier = 1000,
@@ -67,9 +67,9 @@ public class CircuitBreakerFallbackTests
             resiliencePipeline: resiliencePipeline,
             healthTracker: healthTracker);
 
-        var messages = new List<ChatMessage> { new(ChatRole.User, "Teste de resiliência") };
+        var messages = new List<ChatMessage> { new(ChatRole.User, "Resilience test") };
 
-        // Act: Faz 3 requisições consecutivas que falham no primário
+        // Act: Issue 3 consecutive requests that fail on primary
         for (int i = 0; i < 3; i++)
         {
             var res = await client.GetResponseAsync(messages);

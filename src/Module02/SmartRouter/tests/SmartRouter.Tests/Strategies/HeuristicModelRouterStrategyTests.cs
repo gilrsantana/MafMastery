@@ -45,7 +45,7 @@ public class HeuristicModelRouterStrategyTests
         // Arrange
         var messages = new List<ChatMessage>
         {
-            new(ChatRole.User, "Qual é a capital da França?")
+            new(ChatRole.User, "What is the capital of France?")
         };
 
         // Act
@@ -61,7 +61,7 @@ public class HeuristicModelRouterStrategyTests
     [Fact]
     public void ResolveRoute_Should_Select_Premium_When_Prompt_Exceeds_Character_Threshold()
     {
-        // Arrange (mais de 1000 caracteres)
+        // Arrange (more than 1000 characters)
         var longPrompt = new string('a', 1050);
         var messages = new List<ChatMessage>
         {
@@ -84,7 +84,7 @@ public class HeuristicModelRouterStrategyTests
         // Arrange
         var messages = new List<ChatMessage>
         {
-            new(ChatRole.User, "Mensagem curta")
+            new(ChatRole.User, "Short message")
         };
         var options = new ChatOptions
         {

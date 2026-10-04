@@ -71,7 +71,7 @@ public class SmartRoutingChatClientTests
             resiliencePipeline: _resiliencePipeline,
             healthTracker: _healthTracker);
 
-        var messages = new List<ChatMessage> { new(ChatRole.User, "Olá, mundo!") };
+        var messages = new List<ChatMessage> { new(ChatRole.User, "Hello, world!") };
 
         // Act
         var response = await client.GetResponseAsync(messages);
@@ -101,7 +101,7 @@ public class SmartRoutingChatClientTests
             resiliencePipeline: _resiliencePipeline,
             healthTracker: _healthTracker);
 
-        var messages = new List<ChatMessage> { new(ChatRole.User, "Prompt que falhará no primário") };
+        var messages = new List<ChatMessage> { new(ChatRole.User, "Prompt that will fail on primary") };
 
         // Act
         var response = await client.GetResponseAsync(messages);
@@ -158,7 +158,7 @@ public class SmartRoutingChatClientTests
             resiliencePipeline: _resiliencePipeline,
             healthTracker: _healthTracker);
 
-        var messages = new List<ChatMessage> { new(ChatRole.User, "Stream com fallback") };
+        var messages = new List<ChatMessage> { new(ChatRole.User, "Stream with fallback") };
 
         // Act
         var updates = new List<ChatResponseUpdate>();
