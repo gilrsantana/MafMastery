@@ -1,0 +1,213 @@
+@SmartRouter_HostAddress = http://localhost:5178
+@contentType = application/json
+
+###############################################################################
+# 1. DIAGNOSTICS & HEALTH ENDPOINTS
+###############################################################################
+
+### 1.1 Gateway Readiness & Health Check
+# Returns gateway operational status, version and UTC timestamp
+GET {{SmartRouter_HostAddress}}/health
+Accept: {{contentType}}
+
+###
+
+### 1.2 Circuit Breaker Telemetry & Status
+# Checks real-time circuit state (Closed/Open/HalfOpen), failure ratio and counters
+GET {{SmartRouter_HostAddress}}/health/circuit
+Accept: {{contentType}}
+
+###
+
+### 1.3 OpenAPI Specification
+# Retrieves generated OpenAPI v3 documentation document
+GET {{SmartRouter_HostAddress}}/openapi/v1.json
+Accept: {{contentType}}
+
+###
+
+### 1.4 Providers Health Report
+GET {{SmartRouter_HostAddress}}/health/providers
+Accept: {{contentType}}
+
+### 1.5 Providers Live Health Report
+GET {{SmartRouter_HostAddress}}/health/providers?live=true
+Accept: {{contentType}}
+
+###############################################################################
+# 2. CHAT COMPLETIONS (POST /v1/chat/completions)
+###############################################################################
+
+### 2.1 Heuristic Economy Tier (Prompt < 1000 characters)
+# Routes to Economic provider (OpenRouter / Cohere) based on character threshold heuristic
+POST {{SmartRouter_HostAddress}}/v1/chat/completions
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Explique brevemente o padrão Circuit Breaker em microsserviços."
+    }
+  ]
+}
+
+###
+
+### 2.2 Heuristic Premium Tier (Prompt >= 1000 characters)
+# Prompt exceeds CharacterThresholdForPremiumTier (1000 chars), routing to Premium provider (Gemini)
+POST {{SmartRouter_HostAddress}}/v1/chat/completions
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Por favor, analise detalhadamente a arquitetura de software descrita a seguir e aponte riscos de acoplamento, gargalos de escalabilidade e oportunidades de melhoria segundo os princípios do Domain-Driven Design (DDD) e Clean Architecture. Contexto da arquitetura: Nosso ecossistema possui um Gateway Minimal API em .NET 10 que gerencia múltiplos provedores de Large Language Models. Ele implementa uma estratégia heurística baseada no número de caracteres da requisição: prompts com menos de 1000 caracteres são direcionados para um provedor econômico de alta taxa de transferência e baixo custo, enquanto prompts que atingem ou excedem esse limiar são roteados automaticamente para provedores avançados de raciocínio profundo como o Gemini e modelos de alta capacidade. Além da heurística estática, a infraestrutura implementa um Circuit Breaker com amostragem contínua e failover automático caso o provedor primário sofra degradação de latência ou erros de rede. Como você estruturaria os bounded contexts e as camadas de aplicação para suportar auditoria de custos por token e resiliência reativa sem comprometer o throughput?"
+    }
+  ]
+}
+
+###
+
+### 2.3 Explicit Tier Preference: Economy
+# Explicit directive overrides heuristic and forces Economy tier
+POST {{SmartRouter_HostAddress}}/v1/chat/completions
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "routeTierPreference": "Economy",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Qual é a diferença entre IAsyncEnumerable e IEnumerable no C#?"
+    }
+  ]
+}
+
+###
+
+### 2.4 Explicit Tier Preference: Premium
+# Explicit directive overrides heuristic and forces Premium tier (Gemini) even with a short prompt
+POST {{SmartRouter_HostAddress}}/v1/chat/completions
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "routeTierPreference": "Premium",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Resuma a teoria da relatividade geral em uma única frase poética."
+    }
+  ]
+}
+
+###
+
+### 2.5 Custom Sampling Parameters & Specific Model
+# Passes temperature, maxTokens and a target model
+POST {{SmartRouter_HostAddress}}/v1/chat/completions
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "model": "gemini-3.5-flash-lite",
+  "temperature": 0.2,
+  "maxTokens": 150,
+  "routeTierPreference": "Premium",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Liste 3 boas práticas essenciais para implementação de APIs RESTful."
+    }
+  ]
+}
+
+###
+
+### 2.6 Multi-Turn Conversation with System Prompt
+# Demonstrates context preservation with system, user, and assistant roles
+POST {{SmartRouter_HostAddress}}/v1/chat/completions
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "temperature": 0.3,
+  "messages": [
+    {
+      "role": "system",
+      "content": "Você é um arquiteto de software sênior focado em Clean Architecture e boas práticas em .NET."
+    },
+    {
+      "role": "user",
+      "content": "Onde devem ficar as interfaces dos repositórios na Clean Architecture?"
+    },
+    {
+      "role": "assistant",
+      "content": "As interfaces dos repositórios devem residir no núcleo da aplicação (Domain ou Application Core), garantindo que a camada de negócio não dependa de detalhes de infraestrutura."
+    },
+    {
+      "role": "user",
+      "content": "E onde deve ficar a implementação concreta que usa EF Core?"
+    }
+  ]
+}
+
+###
+
+### 2.7 Validation Error - Bad Request (Empty Messages)
+# Expects HTTP 400 Bad Request
+POST {{SmartRouter_HostAddress}}/v1/chat/completions
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "messages": []
+}
+
+###
+
+
+###############################################################################
+# 3. STREAMING CHAT (POST /v1/chat/stream - Server-Sent Events)
+###############################################################################
+
+### 3.1 Reactive Streaming (SSE) - Economy Route
+# Streams tokens asynchronously via text/event-stream using default heuristic
+POST {{SmartRouter_HostAddress}}/v1/chat/stream
+Content-Type: {{contentType}}
+Accept: text/event-stream
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Conte uma história curta sobre um robô que descobriu a música clássica."
+    }
+  ]
+}
+
+###
+
+### 3.2 Reactive Streaming (SSE) - Explicit Premium Route
+# Streams tokens via Server-Sent Events forcing Premium tier
+POST {{SmartRouter_HostAddress}}/v1/chat/stream
+Content-Type: {{contentType}}
+Accept: text/event-stream
+
+{
+  "routeTierPreference": "Premium",
+  "temperature": 0.7,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Escreva um soneto sobre computação quântica e criptografia."
+    }
+  ]
+}
+
+###

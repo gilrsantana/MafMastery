@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SmartRouter.Application/SmartRouter.Application.csproj" />
+    <Project Path="src/SmartRouter.Domain/SmartRouter.Domain.csproj" />
+    <Project Path="src/SmartRouter.Gateway/SmartRouter.Gateway.csproj" />
+    <Project Path="src/SmartRouter.Infrastructure/SmartRouter.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SmartRouter.Tests/SmartRouter.Tests.csproj" />
+  </Folder>
+</Solution>
