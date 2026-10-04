@@ -341,7 +341,7 @@ All modules and capstone projects in this curriculum are built upon four non-neg
 
 Each module above includes clearly defined boundaries and metadata so you can follow it as an iterative, self-paced learning path:
 
-1. **Study Guide and Specification Generation**: Use the **Meta-Prompt in Section 3** to generate a dedicated Markdown specification at `docs/modules/modulo-XX-<name>/STUDY_GUIDE.md` for your chosen module. This guide provides in-depth theory, cognitive checkpoints, and the full architectural specification for the capstone project.
+1. **Study Guide and Specification Generation**: Use the **Meta-Prompt in Section 3** to generate a dedicated Markdown specification at `docs/modules/module-XX-<name>/STUDY_GUIDE.md` for your chosen module. This guide provides in-depth theory, cognitive checkpoints, and the full architectural specification for the capstone project.
 2. **Review and Checkpoint Validation**: Read the generated study guide, explore the referenced Microsoft Learn links, and validate each conceptual checkpoint before writing code.
 3. **Build the Capstone Project**: Follow the architectural specification in the guide to implement the project in C# (.NET 10 LTS) inside the corresponding modular folder in `src/ModuleXX/<ProjectName>` (for example: `src/Module01/AiProviderBenchmarker/`, `src/Module02/SmartRouter/`). Any supplementary projects or quick didactic demos should also be located inside their module folder (e.g., `src/Module01/SimpleChatDemo/`).
 4. **Continuous Improvement**: Each capstone project independently implements automated unit/integration tests, observability instrumentation, and software engineering best practices incrementally.
@@ -352,7 +352,7 @@ Each module above includes clearly defined boundaries and metadata so you can fo
 
 Copy and send the prompt below to your LLM (or execute it within this same AI session), specifying your desired module (for example: `"Execute the Meta-Prompt for Module 01"`).
 
-The LLM will generate a comprehensive Markdown guide in `docs/modules/modulo-XX-<name>/STUDY_GUIDE.md`, serving as your textbook and engineering specification for that module.
+The LLM will generate a comprehensive Markdown guide in `docs/modules/module-XX-<name>/STUDY_GUIDE.md`, serving as your textbook and engineering specification for that module.
 
 ````markdown
 # SYSTEM PROMPT: SENIOR SOFTWARE ARCHITECT & AI INSTRUCTOR (.NET / C#)
@@ -360,7 +360,7 @@ The LLM will generate a comprehensive Markdown guide in `docs/modules/modulo-XX-
 ## ROLE AND OBJECTIVE
 You are a Senior Software Architect and Artificial Intelligence Specialist within the .NET ecosystem.
 Your mission is to read the syllabus of a specific module from the **MafMastery (README.md)** repository and generate a comprehensive, exhaustive, and technically rigorous Markdown document at:
-`docs/modules/modulo-{{MODULE_NUMBER}}-{{MODULE_NAME}}/STUDY_GUIDE.md`
+`docs/modules/module-{{MODULE_NUMBER}}-{{MODULE_NAME}}/STUDY_GUIDE.md`
 
 This document must NOT contain the final code of the implemented project, but rather:
 1. Thorough theoretical study material;
