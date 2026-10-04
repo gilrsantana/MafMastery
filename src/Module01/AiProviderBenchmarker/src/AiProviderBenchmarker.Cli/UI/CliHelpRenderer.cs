@@ -11,8 +11,8 @@ public static class CliHelpRenderer
     {
         AnsiConsole.MarkupLine("[bold cyan]AiProviderBenchmarker — CLI de Benchmark e SLA de IA[/]");
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[bold]Uso interativo:[/] [green]dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli[/]");
-        AnsiConsole.MarkupLine("[bold]Uso com parâmetros:[/] [green]dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [[opções]][/]");
+        AnsiConsole.MarkupLine("[bold]Uso interativo:[/] [green]dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli[/]");
+        AnsiConsole.MarkupLine("[bold]Uso com parâmetros:[/] [green]dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [[opções]][/]");
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("[bold yellow]Opções disponíveis:[/]");
         AnsiConsole.MarkupLine("  [yellow]-p, --prompt <texto>[/]       Prompt de avaliação a ser enviado");

@@ -29,7 +29,7 @@ O **SmartRouter** resolve os principais desafios de governança, FinOps e resili
 ## 🏛️ Estrutura Clean Architecture
 
 ```text
-src/Modulo02/SmartRouter/
+src/Module02/SmartRouter/
 ├── SmartRouter.slnx                       # Solution .NET 10
 ├── SmartRouter.http                       # Requisições HTTP interativas (VS Code / Rider / Visual Studio)
 ├── README.md                              # Este documento
@@ -78,13 +78,13 @@ src/Modulo02/SmartRouter/
 ### 1. Compilação da Solução
 
 ```bash
-dotnet build src/Modulo02/SmartRouter/SmartRouter.slnx
+dotnet build src/Module02/SmartRouter/SmartRouter.slnx
 ```
 
 ### 2. Execução dos Testes Automatizados
 
 ```bash
-dotnet test src/Modulo02/SmartRouter/SmartRouter.slnx
+dotnet test src/Module02/SmartRouter/SmartRouter.slnx
 ```
 
 > **Resultado:** 21/21 testes executados com 100% de sucesso cobrindo validação de opções, roteamento heurístico, fallback resiliente, circuit breaker e requisições HTTP end-to-end com `WebApplicationFactory`.
@@ -92,7 +92,7 @@ dotnet test src/Modulo02/SmartRouter/SmartRouter.slnx
 ### 3. Subir a API Gateway
 
 ```bash
-dotnet run --project src/Modulo02/SmartRouter/src/SmartRouter.Gateway/SmartRouter.Gateway.csproj
+dotnet run --project src/Module02/SmartRouter/src/SmartRouter.Gateway/SmartRouter.Gateway.csproj
 ```
 
 A API estará disponível por padrão nas portas locais configuradas no `launchSettings.json` (ex.: `http://localhost:5178` ou `http://localhost:5000`).
@@ -353,4 +353,4 @@ export SmartRouter__Providers__1__PremiumTier=true
 
 O repositório inclui a suíte completa de requisições interativas pronta para execução via extensão **REST Client** (VS Code) ou cliente HTTP integrado (Rider / Visual Studio) no arquivo:
 
-📄 [`src/Modulo02/SmartRouter/SmartRouter.http`](SmartRouter.http)
+📄 [`src/Module02/SmartRouter/SmartRouter.http`](SmartRouter.http)

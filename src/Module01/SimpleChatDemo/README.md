@@ -45,7 +45,7 @@ static async Task SendChatAsync(IChatClient client, string prompt)
 
 ### 1. Execução Imediata (Sem configurações ou com chaves do ambiente)
 ```bash
-dotnet run --project src/Modulo01/SimpleChatDemo
+dotnet run --project src/Module01/SimpleChatDemo
 ```
 
 Ao executar, você verá o menu interativo:

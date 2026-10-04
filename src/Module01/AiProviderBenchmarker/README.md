@@ -21,7 +21,7 @@ O **AiProviderBenchmarker** é uma ferramenta de linha de comando (CLI) enterpri
 A solução segue rigorosamente os princípios de **Clean Architecture**, com separação clara de responsabilidades:
 
 ```
-src/Modulo01/AiProviderBenchmarker/
+src/Module01/AiProviderBenchmarker/
 ├── AiProviderBenchmarker.slnx              # Arquivo de solução moderno do .NET 10
 ├── src/
 │   ├── AiProviderBenchmarker.Domain/        # Camada de Domínio: regras puras, sem I/O ou frameworks
@@ -91,10 +91,10 @@ Caso contrário, o utilitário `dotnet run` interceptará argumentos como `--hel
 
 ```bash
 # ❌ INCORRETO (o dotnet run intercepta a flag e exibe o help do próprio .NET):
-dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli --help
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli --help
 
 # ✔️ CORRETO (os argumentos após '--' são entregues diretamente à aplicação AiProviderBenchmarker):
-dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --help
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --help
 ```
 
 ---
@@ -104,7 +104,7 @@ dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarke
 Se nenhum argumento for passado e o terminal for interativo (TTY), a aplicação inicia um assistente interativo guiado pelo `Spectre.Console`:
 
 ```bash
-dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli
 ```
 
 No modo interativo você pode:
@@ -120,7 +120,7 @@ No modo interativo você pode:
 Ideal para scripts, pipelines de CI ou comparações rápidas:
 
 ```bash
-dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [argumentos]
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [argumentos]
 ```
 
 #### Tabela de Argumentos da CLI:
@@ -147,17 +147,17 @@ dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarke
 
 #### Exemplo A: Testar Provedores Locais e Offline (Ollama e Simulado)
 ```bash
-dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --providers Ollama,Simulated --max-tokens 200
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --providers Ollama,Simulated --max-tokens 200
 ```
 
 #### Exemplo B: Executar com Prompt Customizado
 ```bash
-dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- -p "Escreva um exemplo de padrão Factory em C# 14 com pattern matching." --providers Simulated,OpenAi -m 250
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- -p "Escreva um exemplo de padrão Factory em C# 14 com pattern matching." --providers Simulated,OpenAi -m 250
 ```
 
 #### Exemplo C: Exibir a Ajuda da CLI
 ```bash
-dotnet run --project src/Modulo01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --help
+dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- --help
 ```
 
 ---
@@ -224,7 +224,7 @@ A suíte de testes unitários foi desenvolvida com **xUnit**, **FluentAssertions
 
 ```bash
 # Executa todos os testes unitários da solução
-dotnet test src/Modulo01/AiProviderBenchmarker/AiProviderBenchmarker.slnx
+dotnet test src/Module01/AiProviderBenchmarker/AiProviderBenchmarker.slnx
 ```
 
 ### O que os testes cobrem:
