@@ -19,7 +19,7 @@ O ecossistema contemporâneo de Inteligência Artificial Generativa é amplament
 
 O ecossistema **.NET (C#)** é historicamente reconhecido por sua excelência em sistemas corporativos de missão crítica, alto desempenho de concorrência assíncrona, forte tipagem e suporte nativo a padrões arquiteturais consagrados. Com as evoluções recentes da Microsoft — em especial o **`Microsoft.Extensions.AI` (MEAI)**, o **`Microsoft.Extensions.AI.Evaluation`**, o **Microsoft Agent Framework (MAF)**, o **Semantic Kernel** e o **ML.NET** —, a plataforma .NET oferece um ferramental unificado de nível enterprise.
 
-Este repositório documenta uma jornada progressiva e completa em **15 Módulos** para capacitar desenvolvedores a atuarem como **Engenheiros de IA com .NET**, cobrindo o ciclo de desenvolvimento de ponta a ponta sem atalhos superficiais.
+Este repositório documenta uma jornada progressiva e completa em **16 Módulos** para capacitar desenvolvedores a atuarem como **Engenheiros de IA com .NET**, cobrindo o ciclo de desenvolvimento de ponta a ponta sem atalhos superficiais.
 
 ---
 
@@ -107,21 +107,39 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
 
 ---
 
-### Módulo 03: Sessões de Usuário, Histórico Resiliente e Gerenciamento de Memória de Agente
+### Módulo 03: Paradigma LangChain em C# (LangChain.NET) vs. Ecossistema Oficial Microsoft: Análise Crítica e Engenharia Comparativa
+- **Contexto & Metas**: Avaliação crítica do ecossistema LangChain no ambiente .NET (`LangChain.NET` da comunidade tryAGI); mapeamento conceitual de *Prompts*, *Chains*, *Memory*, *Tools* e *Agents* para as abstrações canônicas da Microsoft (`Microsoft.Extensions.AI`, `Semantic Kernel` e `Microsoft Agent Framework`); análise aprofundada de *fallbacks*, limitações e riscos técnicos em adotar ports comunitários do LangChain em ambientes corporativos de produção (violação de idiomaticidade .NET e princípios SOLID, governança e risco de *abandonware*, ausência de SLA/suporte corporativo, *leaky abstractions*, gargalos de GC/alocação de memória na Heap, falta de suporte nativo a OpenTelemetry/.NET Aspire e Native AOT); matriz de decisão: quando adotar prototipagem com LangChain e por que priorizar a tríade oficial da Microsoft em soluções de engenharia enterprise.
+- **Abstrações & Frameworks**: `LangChain` (tryAGI), `Microsoft.Extensions.AI` (`IChatClient`, `DelegatingChatClient`), `Microsoft.SemanticKernel`, `Microsoft.Agents.AI`, `System.Diagnostics.DiagnosticSource` / `ActivitySource`.
+- **Princípios & Padrões**: Interface Segregation Principle (ISP), Dependency Inversion Principle (DIP), Decorator Pattern vs. Monolithic Chains, Benchmark & Comparative Analysis Pattern, Twelve-Factor Agent: Factor 1 (Lógica Determinística vs Modelo Probabilístico) e Factor 8 (Observabilidade Nativa).
+- **Referências Microsoft Learn**:
+  - [Visão Geral de IA no .NET](https://learn.microsoft.com/dotnet/ai/)
+  - [Abstrações Unificadas com Microsoft.Extensions.AI](https://learn.microsoft.com/dotnet/ai/ichatclient)
+  - [Conceitos de Semantic Kernel e Migração de Frameworks](https://learn.microsoft.com/semantic-kernel/overview/)
+- **Projeto Integrador 03**:
+  - *Nome*: `FrameworkComparison.Benchmarker`
+  - *Caminho*: `src/Modulo03/FrameworkComparison/`
+  - *Execução & Testes*:
+    - CLI Comparativo: `dotnet run --project src/Modulo03/FrameworkComparison/src/FrameworkComparison.Cli`
+    - Suíte de Testes: `dotnet test src/Modulo03/FrameworkComparison/FrameworkComparison.sln`
+  - *Escopo*: Aplicação de benchmark arquitetural e de desempenho que executa o mesmo cenário corporativo (triagem de pedidos com prompt estruturado, pipeline de validação e medição de telemetria) utilizando duas abordagens lado a lado: `LangChain.NET` e `Microsoft.Extensions.AI`. A ferramenta gera um relatório comparativo em console e Markdown avaliando: tempo de execução, alocação de memória (GC Gen0/Gen1/Gen2 allocations via `GC.GetAllocatedBytesForCurrentThread`), profundidade da pilha de chamadas (call stack tracing), cobertura de observabilidade OpenTelemetry e aderência aos padrões de Injeção de Dependência do .NET.
+
+---
+
+### Módulo 04: Sessões de Usuário, Histórico Resiliente e Gerenciamento de Memória de Agente
 - **Contexto & Metas**: Arquitetura de gerenciamento de estado para agentes e chats conversacionais; separação estrita entre memória de trabalho de curto prazo (*short-term working memory*) e memória episódica de longo prazo (*long-term episodic memory*); estratégias de compactação de contexto, janela deslizante com contagem exata de tokens e sumarização periódica em background; garantia de agentes 100% stateless persistidos em serviços externos.
 - **Abstrações & Frameworks**: `Microsoft.Extensions.Caching.Distributed`, `StackExchange.Redis`, `System.Text.Json`, `Microsoft.Extensions.AI` (`ChatMessage`, `ChatRole`).
 - **Princípios & Padrões**: Repository Pattern, Outbox/Event-Driven Pattern para consolidação de memória, Twelve-Factor: Factor VI (Processos Stateless), Twelve-Factor Agent: Factor 2 (Stateless Agent Runtime).
 - **Referências Microsoft Learn**:
   - [Gerenciamento de Sessão e Conversação no Agent Framework](https://learn.microsoft.com/agent-framework/concepts/agents/conversations/session)
   - [Cache Distribuído em .NET](https://learn.microsoft.com/aspnet/core/performance/caching/distributed)
-- **Projeto Integrador 03**:
+- **Projeto Integrador 04**:
   - *Nome*: `ResilientMemory.Core`
-  - *Caminho*: `src/Modulo03/ResilientMemory/`
+  - *Caminho*: `src/Modulo04/ResilientMemory/`
   - *Escopo*: Serviço de gerenciamento de sessão conversacional com suporte multi-tenant. Implementa pipeline em background que monitora a contagem de tokens da sessão no Redis: ao atingir 75% da janela do modelo, aciona um processo assíncrono para sumarizar e consolidar mensagens anteriores, mantendo a conversa fluida, preservando a identidade do usuário e garantindo custo controlado de prompt.
 
 ---
 
-### Módulo 04: Enterprise RAG: Arquitetura Avançada, Hybrid Search, GraphRAG e Evals
+### Módulo 05: Enterprise RAG: Arquitetura Avançada, Hybrid Search, GraphRAG e Evals
 - **Contexto & Metas**: Superar as limitações e falhas do *Naive RAG*; técnicas de parsing de documentos complexos (PDFs com tabelas, Markdown hierárquico); estratégias de chunking avançadas (Semantic Chunking, Parent-Document Retriever, Sentence-Window); **Hybrid Search** combinando busca vetorial densa com busca esparsa (BM25/Full-Text) via Reciprocal Rank Fusion (RRF); **Re-Ranking** com Cross-Encoders para eliminação de ruído e corte drástico de tokens; conceitos de **GraphRAG** (Microsoft Research) com extração de entidades e sumarização de comunidades em grafos; métricas da Tríade do RAG (*Context Relevance*, *Groundedness / Faithfulness*, *Answer Relevance*) com `Microsoft.Extensions.AI.Evaluation`.
 - **Abstrações & Frameworks**: `IEmbeddingGenerator<TInput, TEmbedding>`, `Microsoft.Extensions.AI.Evaluation` (`GroundednessEvaluator`, `RelevanceEvaluator`, `RetrievalEvaluator`), `Microsoft.SemanticKernel.Connectors.Qdrant` / `AzureAISearch`, `Testcontainers`.
 - **Princípios & Padrões**: Pipeline Pattern, Strategy Pattern para busca híbrida, Continuous Evaluation (CI/CD para IA), Twelve-Factor Agent: Factor 9 (Testability & Evaluation Suites).
@@ -130,27 +148,27 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Avaliação de Groundedness e Segurança no .NET](https://learn.microsoft.com/dotnet/ai/evaluation/evaluate-safety)
   - [Vector Store Connectors no Semantic Kernel](https://learn.microsoft.com/semantic-kernel/concepts/vector-store-connectors/)
   - [Microsoft Research GraphRAG Overview](https://learn.microsoft.com/azure/developer/ai/intro-graphrag)
-- **Projeto Integrador 04**:
+- **Projeto Integrador 05**:
   - *Nome*: `EnterpriseKnowledge.AdvancedRag`
-  - *Caminho*: `src/Modulo04/EnterpriseKnowledge/`
+  - *Caminho*: `src/Modulo05/EnterpriseKnowledge/`
   - *Escopo*: Mecanismo completo de RAG corporativo sobre documentações técnicas complexas. O sistema realiza ingestão hierárquica (Parent-Child), executa busca híbrida (vetorial + lexical) com mesclagem RRF, aplica um modelo Cross-Encoder para reordenar os top 5 resultados mais precisos e entrega a resposta citando fontes verificadas. O projeto acompanha uma suíte de testes automatizados com `Microsoft.Extensions.AI.Evaluation` que calcula a nota de *Groundedness* e reprova o build se houver alucinação.
 
 ---
 
-### Módulo 05: IA Local Soberana com Ollama vs. Nuvem: Análise de Trade-offs e Estratégia Híbrida
+### Módulo 06: IA Local Soberana com Ollama vs. Nuvem: Análise de Trade-offs e Estratégia Híbrida
 - **Contexto & Metas**: Executar LLMs locais (Phi-3/4, Llama 3, DeepSeek) via Ollama integrados nativamente ao .NET; benchmarking comparativo: privacidade total e latência local vs. poder computacional e concorrência na nuvem; arquitetura híbrida (local-first com transição transparente para nuvem).
 - **Abstrações & Frameworks**: `Microsoft.Extensions.AI.Ollama`, Ollama API, Docker.
 - **Princípios & Padrões**: Liskov Substitution Principle (LSP - alternar de Ollama para Azure sem quebrar as regras de domínio), Interface Segregation.
 - **Referências Microsoft Learn**:
   - [Uso do Ollama Chat Client no .NET](https://learn.microsoft.com/dotnet/ai/ichatclient#use-an-ollama-chat-client)
-- **Projeto Integrador 05**:
+- **Projeto Integrador 06**:
   - *Nome*: `HybridLocalCloud.Engine`
-  - *Caminho*: `src/Modulo05/HybridLocalCloud/`
+  - *Caminho*: `src/Modulo06/HybridLocalCloud/`
   - *Escopo*: Sistema de processamento documental que roda localmente via Ollama (`phi-4` ou `llama3.2`). Quando uma demanda exige raciocínio complexo que excede os recursos locais, a aplicação solicita confirmação e despacha os dados higienizados para o provedor em nuvem, emitindo relatório comparativo de VRAM/RAM vs tokens tarifados.
 
 ---
 
-### Módulo 06: Engenharia de Prompts Avançada, Notações Estruturadas (JSON/YAML/TON) e Multimodalidade
+### Módulo 07: Engenharia de Prompts Avançada, Notações Estruturadas (JSON/YAML/TON) e Multimodalidade
 - **Contexto & Metas**: 
   - Técnicas de metaprompting, Few-Shot, Chain-of-Thought (CoT) e separação estrita de mensagens de sistema e usuário;
   - **Arquitetura de Instruções Estruturadas**: Comparativo rigoroso entre Prosa Livre vs Markdown vs Tags XML vs Schemas Estruturados (JSON e YAML);
@@ -163,84 +181,84 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
 - **Referências Microsoft Learn**:
   - [Structured Output com IChatClient](https://learn.microsoft.com/dotnet/ai/ichatclient#structured-output)
   - [Saídas Estruturadas com Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/how-to/structured-outputs)
-- **Projeto Integrador 06**:
+- **Projeto Integrador 07**:
   - *Nome*: `PromptArchitectAndTriage.Service`
-  - *Caminho*: `src/Modulo06/PromptArchitect/`
+  - *Caminho*: `src/Modulo07/PromptArchitect/`
   - *Escopo*: Sistema de triagem corporativa que ingere múltiplos formatos de entrada (áudio com depoimento do cliente via Whisper, imagem de dano via modelo de visão) e gera um laudo pericial validado contra um C# `record SinistroReport(...)`. O projeto inclui um benchmark automatizado que compara a execução do System Prompt nos formatos Prosa, JSON, YAML e TON, gerando um relatório em tabela com: tokens consumidos no prompt, tempo de resposta e taxa de conformidade com 10 restrições de negócio complexas.
 
 ---
 
-### Módulo 07: Governança, Contratos de Uso, Privacidade e Zero Data Retention
+### Módulo 08: Governança, Contratos de Uso, Privacidade e Zero Data Retention
 - **Contexto & Metas**: Análise profunda dos termos de serviço dos provedores (OpenAI Enterprise, Azure OpenAI Data & Privacy, Anthropic Commercial Terms); auditoria de tráfego de dados, políticas de retenção temporária e desativação de treinamento em dados de clientes (Zero Data Retention / HIPAA / GDPR).
 - **Abstrações & Frameworks**: Azure OpenAI Customer Managed Keys (CMK), Virtual Network (VNet) endpoints, DLP (Data Loss Prevention) patterns.
 - **Princípios & Padrões**: Privacy by Design, Zero Trust Architecture, Twelve-Factor: Factor X (Dev/Prod Parity de segurança).
 - **Referências Microsoft Learn**:
   - [Dados, Privacidade e Segurança no Azure OpenAI](https://learn.microsoft.com/legal/cognitive-services/openai/data-privacy)
   - [Linha de Base de Segurança do Azure para Serviços de IA](https://learn.microsoft.com/azure/ai-services/openai/concepts/security-baseline)
-- **Projeto Integrador 07**:
+- **Projeto Integrador 08**:
   - *Nome*: `DataPrivacyAuditor.Tool`
-  - *Caminho*: `src/Modulo07/DataPrivacyAuditor/`
+  - *Caminho*: `src/Modulo08/DataPrivacyAuditor/`
   - *Escopo*: Ferramenta de auditoria de conformidade que intercepta chamadas de IA via middleware HTTP, inspeciona headers (verificando se o endpoint respeita flags de não retenção de dados), valida se dados sensíveis estão sendo enviados para regiões e endpoints homologados e emite relatório alinhado ao Azure Trust Center.
 
 ---
 
-### Módulo 08: Observabilidade Transversal, FinOps de Tokens e Dashboards com OpenTelemetry
+### Módulo 09: Observabilidade Transversal, FinOps de Tokens e Dashboards com OpenTelemetry
 - **Contexto & Metas**: Telemetria ponta a ponta com OpenTelemetry (Métricas, Logs Estruturados, Traces distribuídos de GenAI); rastreamento de consumo de tokens (prompt, completion), latência por modelo, contagem de sessões e usuários; exportação para painéis (.NET Aspire Dashboard, Prometheus/Grafana ou Azure Monitor).
 - **Abstrações & Frameworks**: `OpenTelemetry`, `Microsoft.Extensions.AI` (`UseOpenTelemetry`), .NET Aspire, `System.Diagnostics.Activity`.
 - **Princípios & Padrões**: Observability as Code, Twelve-Factor: Factor XI (Logs como Streams), Twelve-Factor Agent: Factor 8 (Comprehensive Observability & Traceability).
 - **Referências Microsoft Learn**:
   - [Telemetria e Métricas em IChatClient](https://learn.microsoft.com/dotnet/ai/ichatclient#telemetry)
   - [Telemetria no .NET Aspire](https://learn.microsoft.com/dotnet/aspire/fundamentals/telemetry)
-- **Projeto Integrador 08**:
+- **Projeto Integrador 09**:
   - *Nome*: `GenAiObservability.Dashboard`
-  - *Caminho*: `src/Modulo08/GenAiObservability/`
+  - *Caminho*: `src/Modulo09/GenAiObservability/`
   - *Escopo*: Aplicação orquestrada com .NET Aspire utilizando `client.AsBuilder().UseOpenTelemetry().Build()`. Apresenta no painel do Aspire todas as chamadas de LLM, custo acumulado por tenant/usuário, taxas de erro, rastreabilidade em cascata das chamadas de ferramentas e gatilhos de FinOps quando o orçamento diário for atingido.
 
 ---
 
-### Módulo 09: Segurança Ofensiva e Defensiva: OWASP Top 10 for LLM, Prompt Injection e Guardrails
+### Módulo 10: Segurança Ofensiva e Defensiva: OWASP Top 10 for LLM, Prompt Injection e Guardrails
 - **Contexto & Metas**: Ameaças clássicas (Direct/Indirect Prompt Injection, Jailbreaking, System Prompt Extraction, Insecure Output Handling); higienização e isolamento rigoroso de contexto de sistema vs dados não confiáveis; moderação de conteúdo e guardrails programáticos.
 - **Abstrações & Frameworks**: Azure AI Content Safety SDK, bibliotecas de Guardrails em C#, Regex/Semantic Pre-validators.
 - **Princípios & Padrões**: Defense in Depth, Fail-Safe Defaults, Twelve-Factor Agent: Factor 5 (Deterministic Guardrails vs Stochastic LLM).
 - **Referências Microsoft Learn**:
   - [Visão Geral do Azure AI Content Safety](https://learn.microsoft.com/azure/ai-services/content-safety/overview)
   - [Filtragem de Conteúdo no Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/concepts/content-filter)
-- **Projeto Integrador 09**:
+- **Projeto Integrador 10**:
   - *Nome*: `AiFirewall.Middleware`
-  - *Caminho*: `src/Modulo09/AiFirewall/`
+  - *Caminho*: `src/Modulo10/AiFirewall/`
   - *Escopo*: Um `DelegatingChatClient` que atua como Web Application Firewall (WAF) para chamadas de IA. Analisa mensagens de entrada contra padrões de injeção direta e testa a carga contra a API do Azure Content Safety. No retorno da resposta, intercepta e mascara chaves de API ou PII (dados pessoais) vazados acidentalmente.
 
 ---
 
-### Módulo 10: Machine Learning Clássico com ML.NET: Modelos Preditivos e Hibridismo com GenAI
+### Módulo 11: Machine Learning Clássico com ML.NET: Modelos Preditivos e Hibridismo com GenAI
 - **Contexto & Metas**: Ingestão e pipeline de dados (`IDataView`), treinamento, validação e predição em C# sem dependência de Python; algoritmos de regressão, classificação multiclasse e detecção de anomalias em logs e documentos; uso de modelos ML.NET como roteadores de intenção ultrarrápidos e econômicos antes de invocar LLMs.
 - **Abstrações & Frameworks**: `Microsoft.ML`, `MLContext`, `ITransformer`, `PredictionEnginePool`.
 - **Princípios & Padrões**: Data Pipeline Pattern, Pre-filtering Pattern (Early Termination Pattern).
 - **Referências Microsoft Learn**:
   - [Documentação Oficial do ML.NET](https://learn.microsoft.com/dotnet/machine-learning/)
   - [Tutorial de Regressão e Classificação com ML.NET](https://learn.microsoft.com/dotnet/machine-learning/tutorials/predict-prices)
-- **Projeto Integrador 10**:
+- **Projeto Integrador 11**:
   - *Nome*: `SmartSupportTriage.Hybrid`
-  - *Caminho*: `src/Modulo10/SmartSupportTriage/`
+  - *Caminho*: `src/Modulo11/SmartSupportTriage/`
   - *Escopo*: Pipeline de triagem de tickets: um modelo treinado com ML.NET analisa o ticket recebido e prediz a severidade e categoria em microssegundos (on-premises). Se o problema for comum, despacha uma resposta padrão; se for anômalo ou complexo, enriquece o contexto e aciona o pipeline de LLM para resolução detalhada.
 
 ---
 
-### Módulo 11: Extensibilidade com Model Context Protocol (MCP) em .NET
+### Módulo 12: Extensibilidade com Model Context Protocol (MCP) em .NET
 - **Contexto & Metas**: O protocolo MCP como padrão aberto de interoperabilidade para conectar LLMs a ferramentas, bases de dados e APIs corporativas; criação de servidores MCP e clientes MCP nativos em C#; injeção dinâmica de ferramentas em pipelines de chat.
 - **Abstrações & Frameworks**: Protocolo MCP (JSON-RPC / SSE / stdio), `Microsoft.Extensions.AI` com Tool Calling / Function Invocation, SDKs comunitários e oficiais de MCP em C#.
 - **Princípios & Padrões**: Adapter Pattern, Inversion of Control, Twelve-Factor Agent: Factor 6 (Tool Abstraction & MCP).
 - **Referências Microsoft Learn**:
   - [Tools e Integrações no Agent Framework](https://learn.microsoft.com/agent-framework/agents/tools/)
   - [Invocação de Funções e Ferramentas com IChatClient](https://learn.microsoft.com/dotnet/ai/ichatclient#tool-calling)
-- **Projeto Integrador 11**:
+- **Projeto Integrador 12**:
   - *Nome*: `EnterpriseMcpServer.Connector`
-  - *Caminho*: `src/Modulo11/EnterpriseMcpServer/`
+  - *Caminho*: `src/Modulo12/EnterpriseMcpServer/`
   - *Escopo*: Criação de um servidor MCP em .NET que disponibiliza recursos de banco de dados SQL e endpoints REST corporativos com esquemas padronizados. Em seguida, criação de um cliente em C# com `IChatClient` que consome as ferramentas desse servidor MCP via SSE, permitindo que a LLM execute consultas analíticas seguras e auditadas.
 
 ---
 
-### Módulo 12: Agentes de IA com Microsoft Agent Framework (MAF), Semantic Kernel e Declarative Agents
+### Módulo 13: Agentes de IA com Microsoft Agent Framework (MAF), Semantic Kernel e Declarative Agents
 - **Contexto & Metas**: 
   - Conceito formal de Agente (Persona, Ferramentas, Memória, Decisão Autônoma);
   - O ecossistema do **Microsoft Agent Framework** (`Microsoft.Agents.AI`) e interoperabilidade com `Microsoft.SemanticKernel.Agents`;
@@ -253,28 +271,28 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
   - [Visão Geral do Microsoft Agent Framework](https://learn.microsoft.com/agent-framework/overview/)
   - [Conceitos de Harness Agent](https://learn.microsoft.com/agent-framework/concepts/harness)
   - [Esquema do Declarative Agent Manifest da Microsoft](https://learn.microsoft.com/microsoft-365/copilot/extensibility/declarative-agent-manifest-1.8)
-- **Projeto Integrador 12**:
+- **Projeto Integrador 13**:
   - *Nome*: `AutonomousDevAssistant.Agent`
-  - *Caminho*: `src/Modulo12/AutonomousDevAssistant/`
+  - *Caminho*: `src/Modulo13/AutonomousDevAssistant/`
   - *Escopo*: Agente inteligente cuja persona, ferramentas e regras de governança são carregadas dinamicamente a partir de um manifesto declarativo estruturado (JSON/YAML/TON). O agente recebe uma demanda de desenvolvimento em linguagem natural, gera plano de trabalho em memória, executa inspeção de repositório e alteração de arquivos de código via MCP, e antes de qualquer comando de alto risco (ex: commit ou deploy), pausa o runtime e solicita confirmação explícita do desenvolvedor (Human-in-the-Loop).
 
 ---
 
-### Módulo 13: Orquestração Multi-Agente Avançada: Workflows em Grafo e Execução Paralela/Sequencial
+### Módulo 14: Orquestração Multi-Agente Avançada: Workflows em Grafo e Execução Paralela/Sequencial
 - **Contexto & Metas**: Orquestração multi-agente determinística vs estocástica; Workflows baseados em Grafos do Microsoft Agent Framework; padrões sequenciais, paralelos (fan-out/fan-in) e orquestração dinâmica inspirada no Magentic-One; garantia de isolamento de estado com executores (`IResettableExecutor`).
 - **Abstrações & Frameworks**: `Microsoft.Agents.AI.Workflows`, Workflow Builders, Graph State Management, `IResettableExecutor`.
 - **Princípios & Padrões**: Saga Pattern, Directed Acyclic Graph (DAG), Event-Driven Architecture, Twelve-Factor Agent: Factor 3 (Event-Driven & Graph State Transitions).
 - **Referências Microsoft Learn**:
   - [Isolamento de Estado em Workflows do MAF](https://learn.microsoft.com/agent-framework/concepts/workflows/state)
   - [Orquestração Magentic no Agent Framework](https://learn.microsoft.com/agent-framework/workflows/orchestrations/magentic)
-- **Projeto Integrador 13**:
+- **Projeto Integrador 14**:
   - *Nome*: `EnterpriseAudit.MultiAgentWorkflow`
-  - *Caminho*: `src/Modulo13/EnterpriseAudit/`
+  - *Caminho*: `src/Modulo14/EnterpriseAudit/`
   - *Escopo*: Workflow orquestrado composto por 3 agentes especialistas (Pesquisador de Regulamentações, Analista de Dados Financeiros e Auditor de Conformidade) coordenados por um Agente Gerente. O fluxo executa análises de dados em paralelo, consolida as inconsistências através de um grafo com branches condicionais e produz um relatório final consolidado com isolamento total de estado entre execuções concorrentes.
 
 ---
 
-### Módulo 14: Design by Contract (DbC) para Agentes Autônomos em C#
+### Módulo 15: Design by Contract (DbC) para Agentes Autônomos em C#
 - **Contexto & Metas**:
   - Transposição do princípio clássico de **Design by Contract (DbC)** de Bertrand Meyer para a arquitetura de Agentes de IA;
   - Decomposição formal de instruções: **Pré-condições** (validação de entradas e estado inicial), **Invariantes** (regras de negócio estritas que o agente jamais pode violar durante o ciclo) e **Critérios de Aceite / Pós-condições** (*Definition of Done* determinística);
@@ -285,35 +303,36 @@ Todos os módulos e projetos integradores deste roteiro são projetados com base
 - **Referências Microsoft Learn**:
   - [Arquitetura de Extensibilidade e Injeção de Dependências no .NET](https://learn.microsoft.com/dotnet/core/extensions/dependency-injection)
   - [Conceitos de Harness Agent e Validação](https://learn.microsoft.com/agent-framework/concepts/harness)
-- **Projetos Integradores 14**:
-  - *Projeto 14.1*: `DbcContractParser.Core` — Biblioteca e CLI que realiza o parsing de arquivos `*.agent.md`, validando a sintaxe das pré-condições, invariantes e critérios de aceite em objetos tipados `record AgentContract(...)`.
-  - *Projeto 14.2*: `ContractEnforcer.Runner` — Agente de análise de contratos jurídicos e tributários cuja execução é submetida a um validador determinístico de pós-condição. Se a LLM alucinar ou omitir uma cláusula exigida no contrato Markdown, o runtime rejeita a finalização e reexecuta a etapa injetando o erro contratual como feedback.
+- **Projetos Integradores 15**:
+  - *Projeto 15.1*: `DbcContractParser.Core` — Biblioteca e CLI que realiza o parsing de arquivos `*.agent.md`, validando a sintaxe das pré-condições, invariantes e critérios de aceite em objetos tipados `record AgentContract(...)`.
+  - *Projeto 15.2*: `ContractEnforcer.Runner` — Agente de análise de contratos jurídicos e tributários cuja execução é submetida a um validador determinístico de pós-condição. Se a LLM alucinar ou omitir uma cláusula exigida no contrato Markdown, o runtime rejeita a finalização e reexecuta a etapa injetando o erro contratual como feedback.
 
 ---
 
-### Módulo 15: Grand Master Capstone — The Enterprise Agentic Platform
+### Módulo 16: Grand Master Capstone — The Enterprise Agentic Platform
 - **Contexto & Metas**:
-  - Unificação definitiva de **TODAS as disciplinas da trilha (Módulos 01 a 14)** em uma solução enterprise de nível de produção (*Production-Ready Enterprise Platform*);
+  - Unificação definitiva de **TODAS as disciplinas da trilha (Módulos 01 a 15)** em uma solução enterprise de nível de produção (*Production-Ready Enterprise Platform*);
   - Construção de uma **Plataforma Autônoma de Agentes** em C# .NET que atua como host agnóstico de microsserviços de IA para toda a organização;
   - Suporte a *Hot-Reload* e Multi-Tenancy: publicação e atualização de agentes em produção simplesmente adicionando novos arquivos de contrato `*.agent.md` ou grafos `*.workflow.md` em repositórios Git monitorados, sem necessidade de recompilar o código C#;
   - Integração de ponta a ponta da infraestrutura:
     - Gateway unificado com resiliência Polly (Módulos 1 e 2);
-    - Gestão de sessões persistentes no Redis (Módulo 3);
-    - Mecanismo RAG Híbrido com GraphRAG e validação de Groundedness (Módulo 4);
-    - Execução híbrida Ollama local + Nuvem Azure/OpenRouter (Módulo 5);
-    - Otimização de tokens com notações TON e Structured Outputs (Módulo 6);
-    - Auditoria de dados e Zero Data Retention (Módulo 7);
-    - Observabilidade total com OpenTelemetry no .NET Aspire Dashboard (Módulo 8);
-    - WAF de IA e proteção contra Prompt Injection (Módulo 9);
-    - Pré-filtro preditivo com ML.NET (Módulo 10);
-    - Ferramentas distribuídas dinamicamente via Model Context Protocol (Módulo 11);
-    - Orquestração de Agentes do MAF e Workflows em Grafo (Módulos 12 e 13);
-    - Governança estrita orientada a contratos com Design by Contract (Módulo 14).
+    - Análise comparativa e benchmarking arquitetural de frameworks (Módulo 3);
+    - Gestão de sessões persistentes no Redis (Módulo 4);
+    - Mecanismo RAG Híbrido com GraphRAG e validação de Groundedness (Módulo 5);
+    - Execução híbrida Ollama local + Nuvem Azure/OpenRouter (Módulo 6);
+    - Otimização de tokens com notações TON e Structured Outputs (Módulo 7);
+    - Auditoria de dados e Zero Data Retention (Módulo 8);
+    - Observabilidade total com OpenTelemetry no .NET Aspire Dashboard (Módulo 9);
+    - WAF de IA e proteção contra Prompt Injection (Módulo 10);
+    - Pré-filtro preditivo com ML.NET (Módulo 11);
+    - Ferramentas distribuídas dinamicamente via Model Context Protocol (Módulo 12);
+    - Orquestração de Agentes do MAF e Workflows em Grafo (Módulos 13 e 14);
+    - Governança estrita orientada a contratos com Design by Contract (Módulo 15).
 - **Abstrações & Frameworks**: Consolidação do stack completo (`Microsoft.Agents.AI`, `Microsoft.Extensions.AI`, `Microsoft.Extensions.AI.Evaluation`, `OpenTelemetry`, `Polly`, `.NET Aspire`, `ML.NET`, `MCP`, `StackExchange.Redis`, `Markdig`).
 - **Princípios & Padrões**: The Twelve-Factor App & The Twelve-Factor Agent completos, Clean Architecture / DDD, Enterprise Integration Patterns, Zero Trust Architecture.
-- **Projeto Integrador 15 (Grand Finale Capstone)**:
+- **Projeto Integrador 16 (Grand Finale Capstone)**:
   - *Nome*: `EnterpriseAgenticPlatform.Host`
-  - *Caminho*: `src/Modulo15/EnterpriseAgenticPlatform/`
+  - *Caminho*: `src/Modulo16/EnterpriseAgenticPlatform/`
   - *Escopo*: A plataforma corporativa definitiva em .NET. Uma solução distribuída orquestrada com .NET Aspire que sobe um cluster de execução de agentes, provê um portal web para visualização de métricas de FinOps e auditoria de contratos, expõe um catálogo de ferramentas MCP corporativas e executa fluxos complexos de negócios (ex: *Onboarding Automatizado de Fornecedores* envolvendo auditoria jurídica, fiscal e de segurança) guiados 100% por contratos declarativos em Markdown com garantia matemática e determinística de cumprimento de regras.
 
 ---
