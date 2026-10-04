@@ -1,53 +1,53 @@
 # 🌐 SmartRouter — Enterprise AI Gateway & Semantic Dynamic Router
 
-> **Módulo 02 — Projeto Integrador**  
-> Gateway inteligente de IA corporativa construído com **.NET 10 LTS**, **C# 14**, **Microsoft.Extensions.AI (MEAI 10.10.0)** e **Polly v8**.
+> **Module 02 — Capstone Project**  
+> Enterprise AI smart gateway built with **.NET 10 LTS**, **C# 14**, **Microsoft.Extensions.AI (MEAI 10.10.0)**, and **Polly v8**.
 
 ---
 
-## 🎯 Objetivo Arquitetural
+## 🎯 Architectural Objective
 
-O **SmartRouter** resolve os principais desafios de governança, FinOps e resiliência em sistemas modernos orientados a LLMs:
+**SmartRouter** addresses key governance, FinOps, and resilience challenges in modern LLM-driven systems:
 
-1. **Roteamento Dinâmico de Custo/Performance**:
-   - Prompts concisos e triviais (< 1.000 caracteres) são direcionados ao tier **Economic** (ex.: *Ollama / OpenRouter / DeepSeek-Chat*).
-   - Prompts extensos, complexos (>= 1.000 caracteres) ou com diretiva explícita (`"routeTierPreference": "Premium"`) são roteados ao tier **Premium** (ex.: *OpenAI / Azure OpenAI / Gemini*).
-2. **Resiliência Semântica com Failover Transparente**:
-   - Proteção com **Timeout Estratégico** (15s por padrão, configurável via `TimeoutSeconds`) e **Circuit Breaker** reativo via **Polly v8**.
-   - Em caso de indisponibilidade, latência extrema ou circuito aberto no provedor primário (`EconomicProvider`), a chamada é desviada de forma transparente para o provedor secundário de alta disponibilidade (`PremiumProvider`).
-3. **Observabilidade e Telemetria HTTP**:
-   - Headers de resposta informam qual provedor atendeu a chamada (`X-SmartRouter-Target: EconomicProvider` ou `PremiumProvider`), se o failover foi aplicado (`X-SmartRouter-FallbackApplied: true/false`) e a latência de execução (`X-SmartRouter-Latency-Ms`).
-4. **Streaming Reativo**:
-   - Suporte completo a **Server-Sent Events (SSE)** via endpoint `POST /v1/chat/stream`, garantindo baixa latência na emissão de tokens.
-5. **Diagnósticos e Health Probes**:
-   - Endpoints dedicados para checagem de integridade do Gateway (`/health`), telemetria do Circuit Breaker (`/health/circuit`) e relatório de saúde dos provedores (`/health/providers`), com suporte a sondagem ativa em tempo real (`?live=true`).
+1. **Dynamic Cost/Performance Routing**:
+   - Concise, trivial prompts (< 1,000 characters) are routed to the **Economic** tier (e.g., *Ollama / OpenRouter / DeepSeek-Chat*).
+   - Long, complex prompts (>= 1,000 characters) or explicit directives (`"routeTierPreference": "Premium"`) are routed to the **Premium** tier (e.g., *OpenAI / Azure OpenAI / Gemini*).
+2. **Semantic Resilience with Transparent Failover**:
+   - Protected by a **Strategic Timeout** (15s default, configurable via `TimeoutSeconds`) and reactive **Circuit Breaker** powered by **Polly v8**.
+   - Upon outages, extreme latency, or an open circuit on the primary provider (`EconomicProvider`), calls are transparently rerouted to the high-availability secondary provider (`PremiumProvider`).
+3. **Observability and HTTP Telemetry**:
+   - Response headers detail which provider fulfilled the request (`X-SmartRouter-Target: EconomicProvider` or `PremiumProvider`), whether failover was triggered (`X-SmartRouter-FallbackApplied: true/false`), and execution latency (`X-SmartRouter-Latency-Ms`).
+4. **Reactive Streaming**:
+   - Full support for **Server-Sent Events (SSE)** via the `POST /v1/chat/stream` endpoint, providing low-latency token streaming.
+5. **Diagnostics and Health Probes**:
+   - Dedicated endpoints for gateway health (`/health`), Circuit Breaker telemetry (`/health/circuit`), and provider health reports (`/health/providers`), with support for active real-time probing (`?live=true`).
 6. **Zero-Config Local Run**:
-   - Provedores simulados de alta fidelidade (`SimulatedProviderChatClient`) integrados permitem execução local e suíte de testes 100% determinística sem necessidade de cadastrar chaves pagas imediatas (`UseSimulatedClientsIfUnconfigured: true`).
+   - Built-in high-fidelity simulated providers (`SimulatedProviderChatClient`) enable deterministic local execution and a 100% reliable test suite without requiring immediate paid API keys (`UseSimulatedClientsIfUnconfigured: true`).
 
 ---
 
-## 🏛️ Estrutura Clean Architecture
+## 🏛️ Clean Architecture Structure
 
 ```text
 src/Module02/SmartRouter/
-├── SmartRouter.slnx                       # Solution .NET 10
-├── SmartRouter.http                       # Requisições HTTP interativas (VS Code / Rider / Visual Studio)
-├── README.md                              # Este documento
+├── SmartRouter.slnx                       # .NET 10 Solution
+├── SmartRouter.http                       # Interactive HTTP requests (VS Code / Rider / Visual Studio)
+├── README.md                              # This document
 ├── src/
-│   ├── SmartRouter.Domain/                # Regras de negócio puras, enums, modelos e contratos
+│   ├── SmartRouter.Domain/                # Pure business rules, enums, models, and contracts
 │   │   ├── Enums/                         # RouteTier, ProviderKind
 │   │   ├── Models/                        # RoutingDecision, ProviderHealthSnapshot, ProviderHealthStatus, RouterServiceAiKey
 │   │   ├── Strategies/                    # IModelRouterStrategy
 │   │   └── Services/                      # IProviderHealthTracker
 │   │
-│   ├── SmartRouter.Application/           # Casos de uso, orquestração e DTOs
+│   ├── SmartRouter.Application/           # Use cases, orchestration, and DTOs
 │   │   ├── Common/                        # ISmartRouterService
 │   │   ├── DTOs/                          # ChatMessageDto, ChatRequestDto, ChatResponseDto, CircuitStatusDto,
 │   │   │                                  # ProviderHealthItemDto, ProvidersHealthReportDto
 │   │   ├── UseCases/                      # SmartRouterService
 │   │   └── Extensions/                    # ServiceCollectionExtensions
 │   │
-│   ├── SmartRouter.Infrastructure/        # Implementações de IA, Polly v8, Clientes e Health
+│   ├── SmartRouter.Infrastructure/        # AI implementations, Polly v8, Clients, and Health
 │   │   ├── Configuration/                 # SmartRouterOptions, AiProviderConfig
 │   │   ├── Health/                        # ProviderHealthTracker (Thread-safe)
 │   │   ├── Strategies/                    # HeuristicModelRouterStrategy
@@ -56,14 +56,14 @@ src/Module02/SmartRouter/
 │   │   ├── Clients/                       # SmartRoutingChatClient (DelegatingChatClient)
 │   │   └── Extensions/                    # ServiceCollectionExtensions
 │   │
-│   └── SmartRouter.Gateway/               # Minimal APIs, SSE e Scalar/OpenAPI
+│   └── SmartRouter.Gateway/               # Minimal APIs, SSE, and Scalar/OpenAPI
 │       ├── Endpoints/                     # ChatEndpoints, DiagnosticEndpoints
-│       ├── appsettings.json               # Configurações do Gateway (ex.: Ollama + OpenAI)
-│       ├── appsettings.Development.json   # Configurações de desenvolvimento (ex.: OpenRouter + Gemini)
-│       └── Program.cs                     # Inicialização da Web API
+│       ├── appsettings.json               # Gateway Configuration (e.g., Ollama + OpenAI)
+│       ├── appsettings.Development.json   # Development Configuration (e.g., OpenRouter + Gemini)
+│       └── Program.cs                     # Web API Host Bootstrap
 │
 └── tests/
-    └── SmartRouter.Tests/                 # Testes unitários e de integração (21 testes)
+    └── SmartRouter.Tests/                 # Unit and integration tests (21 tests)
         ├── Configuration/                 # SmartRouterOptionsValidationTests
         ├── Strategies/                    # HeuristicModelRouterStrategyTests
         ├── Clients/                       # SmartRoutingChatClientTests
@@ -73,48 +73,48 @@ src/Module02/SmartRouter/
 
 ---
 
-## 🚀 Como Executar
+## 🚀 How to Run
 
-### 1. Compilação da Solução
+### 1. Build the Solution
 
 ```bash
 dotnet build src/Module02/SmartRouter/SmartRouter.slnx
 ```
 
-### 2. Execução dos Testes Automatizados
+### 2. Run Automated Tests
 
 ```bash
 dotnet test src/Module02/SmartRouter/SmartRouter.slnx
 ```
 
-> **Resultado:** 21/21 testes executados com 100% de sucesso cobrindo validação de opções, roteamento heurístico, fallback resiliente, circuit breaker e requisições HTTP end-to-end com `WebApplicationFactory`.
+> **Result:** 21/21 tests pass with 100% success covering options validation, heuristic routing, resilient fallback, circuit breaker, and end-to-end HTTP requests via `WebApplicationFactory`.
 
-### 3. Subir a API Gateway
+### 3. Launch Gateway API
 
 ```bash
 dotnet run --project src/Module02/SmartRouter/src/SmartRouter.Gateway/SmartRouter.Gateway.csproj
 ```
 
-A API estará disponível por padrão nas portas locais configuradas no `launchSettings.json` (ex.: `http://localhost:5178` ou `http://localhost:5000`).
+The API will be available on the default local ports configured in `launchSettings.json` (e.g., `http://localhost:5178` or `http://localhost:5000`).
 
-### 4. Documentação Interativa com Scalar
+### 4. Interactive Documentation with Scalar
 
-Com a aplicação em execução no ambiente de desenvolvimento, acesse a interface moderna do **Scalar**:
+When running in the Development environment, open the modern **Scalar** interface:
 
 - 🌐 **Scalar API Reference:** [`http://localhost:5178/scalar/v1`](http://localhost:5178/scalar/v1)
 - 📄 **OpenAPI Spec (JSON):** [`http://localhost:5178/openapi/v1.json`](http://localhost:5178/openapi/v1.json)
 
 ---
 
-## 📡 Endpoints e Exemplos de Chamadas (`curl`)
+## 📡 Endpoints and Call Examples (`curl`)
 
-### 1. Prontidão e Liveness do Gateway
+### 1. Gateway Readiness and Liveness
 
 ```bash
 curl http://localhost:5178/health
 ```
 
-**Exemplo de Resposta:**
+**Sample Response:**
 ```json
 {
   "status": "Healthy",
@@ -126,21 +126,21 @@ curl http://localhost:5178/health
 
 ---
 
-### 2. Chat Tradicional (Monolítico com Roteamento Heurístico)
+### 2. Standard Chat (Monolithic with Heuristic Routing)
 
-#### Prompt Curto (< 1.000 caracteres — Roteado para o Tier Econômico):
+#### Short Prompt (< 1,000 characters — Routed to Economy Tier):
 ```bash
 curl -X POST http://localhost:5178/v1/chat/completions \
   -H "Content-Type: application/json" \
   -i \
   -d '{
     "messages": [
-      { "role": "user", "content": "Explique o que é Clean Architecture em duas linhas." }
+      { "role": "user", "content": "Explain Clean Architecture in two sentences." }
     ]
   }'
 ```
 
-**Exemplo de Resposta:**
+**Sample Response:**
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
@@ -149,7 +149,7 @@ X-SmartRouter-FallbackApplied: false
 X-SmartRouter-Latency-Ms: 12
 
 {
-  "responseText": "[Simulated OpenRouter (deepseek/deepseek-chat)] Resposta gerada com sucesso para: 'Explique o que é Clean Architecture em duas linhas.'",
+  "responseText": "[Simulated OpenRouter (deepseek/deepseek-chat)] Response successfully generated for: 'Explain Clean Architecture in two sentences.'",
   "targetProvider": "EconomicProvider",
   "model": "deepseek/deepseek-chat",
   "fallbackApplied": false,
@@ -161,7 +161,7 @@ X-SmartRouter-Latency-Ms: 12
 
 ---
 
-### 3. Chat com Forçamento de Rota Premium
+### 3. Chat with Explicit Premium Tier Directive
 
 ```bash
 curl -X POST http://localhost:5178/v1/chat/completions \
@@ -170,12 +170,12 @@ curl -X POST http://localhost:5178/v1/chat/completions \
   -d '{
     "routeTierPreference": "Premium",
     "messages": [
-      { "role": "user", "content": "Preciso de uma análise crítica profunda." }
+      { "role": "user", "content": "I need an in-depth critical analysis." }
     ]
   }'
 ```
 
-**Headers Retornados:**
+**Returned Headers:**
 ```http
 X-SmartRouter-Target: PremiumProvider
 X-SmartRouter-FallbackApplied: false
@@ -183,42 +183,42 @@ X-SmartRouter-FallbackApplied: false
 
 ---
 
-### 4. Streaming Reativo (Server-Sent Events)
+### 4. Reactive Streaming (Server-Sent Events)
 
 ```bash
 curl -N -X POST http://localhost:5178/v1/chat/stream \
   -H "Content-Type: application/json" \
   -d '{
     "messages": [
-      { "role": "user", "content": "Escreva um poema sobre resiliência de software." }
+      { "role": "user", "content": "Write a poem about software resilience." }
     ]
   }'
 ```
 
-**Chunks Emitidos via SSE:**
+**Chunks Emitted via SSE:**
 ```text
 data: {"delta":"[Simulated OpenRouter] "}
 
-data: {"delta":"Processando "}
+data: {"delta":"Processing "}
 
-data: {"delta":"sua requisição "}
+data: {"delta":"your request "}
 
-data: {"delta":"de forma resiliente: "}
+data: {"delta":"resiliently: "}
 
-data: {"delta":"'Escreva um poema sobre resiliência de software.'."}
+data: {"delta":"'Write a poem about software resilience.'."}
 
 data: [DONE]
 ```
 
 ---
 
-### 5. Telemetria do Circuit Breaker em Tempo Real
+### 5. Real-Time Circuit Breaker Telemetry
 
 ```bash
 curl http://localhost:5178/health/circuit
 ```
 
-**Exemplo de Resposta:**
+**Sample Response:**
 ```json
 {
   "provider": "EconomicProvider",
@@ -234,19 +234,19 @@ curl http://localhost:5178/health/circuit
 
 ---
 
-### 6. Relatório de Saúde dos Provedores e Sondagem Ativa (*Live Probe*)
+### 6. Provider Health Report and Active Probing (*Live Probe*)
 
-#### Consulta Telemetria dos Provedores:
+#### Query Provider Telemetry:
 ```bash
 curl http://localhost:5178/health/providers
 ```
 
-#### Executa Sonda Ativa em Tempo Real (Ping nos Provedores com Medição de Latência):
+#### Execute Real-Time Active Probe (Ping Providers with Latency Measurement):
 ```bash
 curl "http://localhost:5178/health/providers?live=true"
 ```
 
-**Exemplo de Resposta:**
+**Sample Response:**
 ```json
 {
   "overallStatus": "Healthy",
@@ -284,11 +284,11 @@ curl "http://localhost:5178/health/providers?live=true"
 
 ---
 
-## ⚙️ Configuração dos Provedores (`AiProviderConfig`)
+## ⚙️ Provider Configuration (`AiProviderConfig`)
 
-O SmartRouter utiliza o modelo universal `AiProviderConfig` em `SmartRouterOptions.Providers`. A configuração exige **exatamente dois provedores homologados**: um para o tier econômico (`PremiumTier: false`) e outro para o tier premium (`PremiumTier: true`).
+SmartRouter uses the universal `AiProviderConfig` model in `SmartRouterOptions.Providers`. Configuration requires **exactly two configured providers**: one for the economic tier (`PremiumTier: false`) and one for the premium tier (`PremiumTier: true`).
 
-### Configuração via `appsettings.json`
+### Configuration via `appsettings.json`
 
 ```json
 {
@@ -306,7 +306,7 @@ O SmartRouter utiliza o modelo universal `AiProviderConfig` em `SmartRouterOptio
       {
         "AiProviderName": "OpenAi",
         "Endpoint": "https://api.openai.com/v1",
-        "ApiKey": "sk-proj-sua-chave-openai",
+        "ApiKey": "sk-proj-your-openai-key",
         "DefaultModel": "gpt-4o-mini",
         "HttpReferer": "https://mafmastery.local",
         "AppTitle": "MafMastery-SmartRouter",
@@ -324,33 +324,33 @@ O SmartRouter utiliza o modelo universal `AiProviderConfig` em `SmartRouterOptio
 }
 ```
 
-### Configuração via Variáveis de Ambiente
+### Configuration via Environment Variables
 
-Para ambientes de produção ou contêineres Docker/Kubernetes, utilize o formato hierárquico padrão do ASP.NET Core:
+For production environments or Docker/Kubernetes containers, use standard ASP.NET Core hierarchical environment variables:
 
 ```bash
 export SmartRouter__UseSimulatedClientsIfUnconfigured=false
 export SmartRouter__TimeoutSeconds=15
 
-# Provedor Econômico (Índice 0) - Ex.: OpenRouter
+# Economic Provider (Index 0) - e.g., OpenRouter
 export SmartRouter__Providers__0__AiProviderName="OpenRouter"
 export SmartRouter__Providers__0__Endpoint="https://openrouter.ai/api/v1"
-export SmartRouter__Providers__0__ApiKey="sk-or-v1-sua-chave"
+export SmartRouter__Providers__0__ApiKey="sk-or-v1-your-key"
 export SmartRouter__Providers__0__DefaultModel="deepseek/deepseek-chat"
 export SmartRouter__Providers__0__PremiumTier=false
 
-# Provedor Premium (Índice 1) - Ex.: OpenAI ou Azure OpenAI
+# Premium Provider (Index 1) - e.g., OpenAI or Azure OpenAI
 export SmartRouter__Providers__1__AiProviderName="OpenAi"
 export SmartRouter__Providers__1__Endpoint="https://api.openai.com/v1"
-export SmartRouter__Providers__1__ApiKey="sk-proj-sua-chave"
+export SmartRouter__Providers__1__ApiKey="sk-proj-your-key"
 export SmartRouter__Providers__1__DefaultModel="gpt-4o-mini"
 export SmartRouter__Providers__1__PremiumTier=true
 ```
 
 ---
 
-## 🧪 Testes Interativos (`SmartRouter.http`)
+## 🧪 Interactive Testing (`SmartRouter.http`)
 
-O repositório inclui a suíte completa de requisições interativas pronta para execução via extensão **REST Client** (VS Code) ou cliente HTTP integrado (Rider / Visual Studio) no arquivo:
+The repository includes a complete interactive request collection ready to run via the **REST Client** extension (VS Code) or integrated HTTP client (Rider / Visual Studio) in:
 
 📄 [`src/Module02/SmartRouter/SmartRouter.http`](SmartRouter.http)
