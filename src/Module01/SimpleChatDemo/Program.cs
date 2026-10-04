@@ -4,24 +4,25 @@ using Microsoft.Extensions.Configuration;
 using OpenAI;
 
 // =========================================================================================
-// MÓDULO 01 - QUICKSTART DIDÁTICO: FLEXIBILIDADE DO MAF (Microsoft.Extensions.AI)
-// Demonstração prática de como a abstração unificada IChatClient elimina o Vendor Lock-in!
+// MODULE 01 - EDUCATIONAL QUICKSTART: MAF FLEXIBILITY (Microsoft.Extensions.AI)
+// Practical demonstration of how the unified IChatClient abstraction eliminates Vendor Lock-in!
 // =========================================================================================
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 Console.WriteLine("==================================================================");
-Console.WriteLine(" 🚀 MAF (Microsoft.Extensions.AI) — Chat Multi-Provider Quickstart ");
+Console.WriteLine(" 🚀 MAF (Microsoft.Extensions.AI) — Multi-Provider Chat Quickstart ");
 Console.WriteLine("==================================================================");
-Console.WriteLine("Veja como uma única função C# conversa com múltiplos provedores de IA!\n");
+Console.WriteLine("See how a single C# function talks to multiple AI providers!\n");
 
-// 1. Carrega configurações do appsettings.json e appsettings.Development.json
+// 1. Loads configuration from appsettings.json and appsettings.Development.json
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
     ?? "Production";
 
 var config = new ConfigurationBuilder()
     .SetBasePath(AppContext.BaseDirectory)
-    .AddJsonFile(environment == "Development" ? "appsettings.Development.json" : "appsettings.Development.json", optional: true)
+    .AddJsonFile("appsettings.json", optional: true)
+    .AddJsonFile($"appsettings.{environment}.json", optional: true)
     .AddEnvironmentVariables()
     .Build();
 
@@ -35,10 +36,10 @@ var geminiModel = config["AiProviders:Gemini:ModelId"] ?? "gemini-3.5-flash-lite
 var ollamaEndpoint = config["AiProviders:Ollama:Endpoint"] ?? "http://localhost:11434/v1";
 var ollamaModel = config["AiProviders:Ollama:ModelId"] ?? "llama3.2:3b";
 
-// 2. Dicionário de Provedores: repare que TODOS são instanciados como 'IChatClient'
+// 2. Provider Dictionary: notice that ALL are instantiated as 'IChatClient'
 var providers = new Dictionary<string, Func<IChatClient>>()
 {
-    ["1. Ollama Local (API OpenAI /v1)"] = () =>
+    ["1. Local Ollama (OpenAI API /v1)"] = () =>
     {
         var options = new OpenAIClientOptions { Endpoint = new Uri(ollamaEndpoint) };
         return new OpenAIClient(new ApiKeyCredential("ollama-local"), options)
@@ -49,7 +50,7 @@ var providers = new Dictionary<string, Func<IChatClient>>()
     ["2. OpenAI Cloud (gpt-4o-mini)"] = () =>
     {
         if (string.IsNullOrWhiteSpace(openAiKey))
-            throw new InvalidOperationException("ApiKey da OpenAI não configurada no appsettings.");
+            throw new InvalidOperationException("OpenAI ApiKey is not configured in appsettings.");
         return new OpenAIClient(openAiKey)
             .GetChatClient(openAiModel)
             .AsIChatClient();
@@ -58,7 +59,7 @@ var providers = new Dictionary<string, Func<IChatClient>>()
     ["3. Google Gemini (via OpenAI Endpoint)"] = () =>
     {
         if (string.IsNullOrWhiteSpace(geminiKey))
-            throw new InvalidOperationException("ApiKey do Gemini não configurada no appsettings.");
+            throw new InvalidOperationException("Gemini ApiKey is not configured in appsettings.");
         var options = new OpenAIClientOptions { Endpoint = new Uri(geminiEndpoint) };
         return new OpenAIClient(new ApiKeyCredential(geminiKey), options)
             .GetChatClient(geminiModel)
@@ -66,33 +67,33 @@ var providers = new Dictionary<string, Func<IChatClient>>()
     }
 };
 
-// 3. Menu Interativo simples no Console
-Console.WriteLine("Escolha o provedor para testar:");
+// 3. Simple Interactive Console Menu
+Console.WriteLine("Choose a provider to test:");
 var providerKeys = providers.Keys.ToList();
 for (int i = 0; i < providerKeys.Count; i++)
 {
     Console.WriteLine($"  [{i + 1}] {providerKeys[i]}");
 }
-Console.WriteLine($"  [{providerKeys.Count + 1}] Disparar o mesmo prompt para TODOS os provedores em sequência!");
-Console.WriteLine("  [0] Sair\n");
+Console.WriteLine($"  [{providerKeys.Count + 1}] Dispatch the same prompt to ALL providers in sequence!");
+Console.WriteLine("  [0] Exit\n");
 
-Console.Write("Digite sua opção: ");
+Console.Write("Enter your option: ");
 var input = Console.ReadLine();
 
 if (input == "0" || string.IsNullOrWhiteSpace(input))
 {
-    Console.WriteLine("Encerrando demonstração.");
+    Console.WriteLine("Exiting demo.");
     return;
 }
 
-Console.Write("\nDigite sua pergunta para a IA (ou pressione [Enter] para a pergunta padrão): ");
+Console.Write("\nEnter your prompt for the AI (or press [Enter] for default prompt): ");
 var userPrompt = Console.ReadLine();
 if (string.IsNullOrWhiteSpace(userPrompt))
 {
-    userPrompt = "Em apenas uma frase, qual é a principal vantagem de usar Microsoft.Extensions.AI no .NET?";
+    userPrompt = "In just one sentence, what is the main benefit of using Microsoft.Extensions.AI in .NET?";
 }
 
-Console.WriteLine($"\nPrompt enviado: \"{userPrompt}\"");
+Console.WriteLine($"\nSent prompt: \"{userPrompt}\"");
 
 if (int.TryParse(input, out int choice) && choice >= 1 && choice <= providerKeys.Count)
 {
@@ -108,23 +109,23 @@ else if (choice == providerKeys.Count + 1)
 }
 else
 {
-    Console.WriteLine("Opção inválida.");
+    Console.WriteLine("Invalid option.");
 }
 
 Console.WriteLine("\n==================================================================");
-Console.WriteLine(" ✅ Demonstração concluída!");
+Console.WriteLine(" ✅ Demo completed!");
 Console.WriteLine("==================================================================");
 
 
 // =========================================================================================
-// 🌟 A MÁGICA DA ABSTRAÇÃO (MAF / MEAI):
-// Esta função recebe apenas a interface 'IChatClient' e desconhece completamente se
-// está falando com OpenAI, Gemini, Ollama ou um mock de testes.
+// 🌟 THE MAGIC OF ABSTRACTION (MAF / MEAI):
+// This function only receives the 'IChatClient' interface and is completely agnostic
+// as to whether it is talking to OpenAI, Gemini, Ollama, or a test mock.
 // =========================================================================================
 static async Task ExecuteChatAsync(string providerName, Func<IChatClient> clientFactory, string prompt)
 {
     Console.WriteLine($"\n------------------------------------------------------------");
-    Console.WriteLine($" Conectando ao provedor: {providerName}...");
+    Console.WriteLine($" Connecting to provider: {providerName}...");
     Console.WriteLine($"------------------------------------------------------------");
 
     try
@@ -135,17 +136,16 @@ static async Task ExecuteChatAsync(string providerName, Func<IChatClient> client
     catch (Exception ex)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"[Aviso de Conexão]: {ex.Message}");
+        Console.WriteLine($"[Connection Warning]: {ex.Message}");
         Console.ResetColor();
     }
 }
 
 static async Task SendStreamingChatAsync(IChatClient client, string prompt)
 {
-    Console.Write("Resposta (Streaming): ");
+    Console.Write("Response (Streaming): ");
 
-
-    // É possível modificar a forma como a IA responde alterando os diversos parâmetros de chatOptions
+    // You can customize how the AI responds by modifying various chatOptions parameters
     var chatOptions = new ChatOptions
     {
         Temperature = 0.1f
@@ -158,7 +158,7 @@ static async Task SendStreamingChatAsync(IChatClient client, string prompt)
     //chatOptions.Seed = 123;
     //chatOptions.ResponseFormat = ChatResponseFormat.Text;
 
-    // Consome tokens em tempo real via streaming assíncrono padronizado do MEAI
+    // Consumes tokens in real time via standardized MEAI asynchronous streaming
     await foreach (var update in client.GetStreamingResponseAsync(prompt, chatOptions))
     {
         Console.Write(update.Text);
