@@ -5,17 +5,17 @@ using SmartRouter.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configuração e injeção de dependência dos módulos Clean Architecture
+// 1. Clean Architecture module configuration and dependency injection
 builder.Services.AddSmartRouterApplication();
 builder.Services.AddSmartRouterInfrastructure(builder.Configuration);
 
-// 2. Documentação e OpenAPI
+// 2. Documentation and OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// 3. Pipeline de middleware HTTP e UI Interativa de Documentação (Scalar)
+// 3. HTTP middleware pipeline and interactive documentation UI (Scalar)
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -30,11 +30,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 4. Mapeamento de rotas e endpoints
+// 4. Route and endpoint mapping
 app.MapChatEndpoints();
 app.MapDiagnosticEndpoints();
 
 app.Run();
 
-// Necessário para habilitar WebApplicationFactory nos testes de integração
+// Required to enable WebApplicationFactory in integration tests
 public partial class Program { }

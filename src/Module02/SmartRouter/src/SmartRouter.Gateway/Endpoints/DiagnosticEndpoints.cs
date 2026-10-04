@@ -20,7 +20,7 @@ public static class DiagnosticEndpoints
             timestampUtc = DateTime.UtcNow
         }))
         .WithName("GetGatewayHealth")
-        .WithSummary("Verifica a prontidão e integridade do Gateway.")
+        .WithSummary("Checks gateway readiness and health.")
         .Produces(StatusCodes.Status200OK);
 
         group.MapGet("/circuit", ([FromServices] ISmartRouterService routerService) =>
@@ -29,7 +29,7 @@ public static class DiagnosticEndpoints
             return Results.Ok(status);
         })
         .WithName("GetCircuitStatus")
-        .WithSummary("Consulta a telemetria em tempo real do Circuit Breaker do provedor primário.")
+        .WithSummary("Queries real-time Circuit Breaker telemetry for the primary provider.")
         .Produces<CircuitStatusDto>(StatusCodes.Status200OK);
 
         group.MapGet("/providers", async (
@@ -44,7 +44,7 @@ public static class DiagnosticEndpoints
             }
         )
         .WithName("GetProvidersHealth")
-        .WithSummary("Consulta a telemetria ou executa uma sonda ativa em todos os provedores.")
+        .WithSummary("Queries telemetry or executes active latency probing across all providers.")
         .Produces<ProvidersHealthReportDto>(StatusCodes.Status200OK)
         .Produces<ProvidersHealthReportDto>(StatusCodes.Status503ServiceUnavailable);
 

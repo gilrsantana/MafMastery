@@ -21,12 +21,12 @@ public static class ChatEndpoints
         {
             if (request.Messages == null || !request.Messages.Any())
             {
-                return Results.BadRequest(new { error = "Pelo menos uma mensagem é obrigatória." });
+                return Results.BadRequest(new { error = "At least one message is required." });
             }
 
             var response = await routerService.CompleteChatAsync(request, ct);
 
-            // Adiciona Headers customizados exigidos na especificação da arquitetura
+            // Add custom telemetry headers required by architecture specification
             httpContext.Response.Headers["X-SmartRouter-Target"] = response.TargetProvider;
             httpContext.Response.Headers["X-SmartRouter-FallbackApplied"] = response.FallbackApplied.ToString().ToLowerInvariant();
             httpContext.Response.Headers["X-SmartRouter-Latency-Ms"] = response.LatencyMs.ToString();
@@ -34,7 +34,7 @@ public static class ChatEndpoints
             return Results.Ok(response);
         })
         .WithName("CompleteChat")
-        .WithSummary("Processa inferência com roteamento dinâmico e resiliência com failover transparente.")
+        .WithSummary("Processes AI inference with dynamic routing and transparent resilient failover.")
         .Produces<ChatResponseDto>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
 
@@ -47,7 +47,7 @@ public static class ChatEndpoints
         {
             if (request.Messages == null || !request.Messages.Any())
             {
-                return Results.BadRequest(new { error = "Pelo menos uma mensagem é obrigatória." });
+                return Results.BadRequest(new { error = "At least one message is required." });
             }
 
             httpContext.Response.ContentType = "text/event-stream";
@@ -71,7 +71,7 @@ public static class ChatEndpoints
             return Results.Empty;
         })
         .WithName("StreamChat")
-        .WithSummary("Transmissão reativa de tokens via Server-Sent Events (SSE) com failover resiliente.")
+        .WithSummary("Reactive token streaming via Server-Sent Events (SSE) with resilient failover.")
         .Produces(StatusCodes.Status200OK, contentType: "text/event-stream")
         .Produces(StatusCodes.Status400BadRequest);
 
