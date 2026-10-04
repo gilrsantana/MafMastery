@@ -1,21 +1,21 @@
-# Módulo 01: SimpleChatDemo — Demonstração Didática do MAF (Microsoft.Extensions.AI)
+# Module 01: SimpleChatDemo — Educational Demo of MAF (Microsoft.Extensions.AI)
 
-> Implementado em **.NET 10 (LTS)** e **C# 14**, baseado no pacote oficial **`Microsoft.Extensions.AI` (MEAI / MAF)**.
-
----
-
-## 🎯 Objetivo Deste Projeto
-
-> **Mostrar ao desenvolvedor como uma única interface C# (`IChatClient`) e uma única função genérica conseguem conversar com múltiplos provedores de IA (OpenAI, Google Gemini, Ollama Local e Simulado Offline) sem alterar uma única linha de código de negócio.**
+> Implemented in **.NET 10 (LTS)** and **C# 14**, based on the official **`Microsoft.Extensions.AI` (MEAI / MAF)** package.
 
 ---
 
-## 💡 A Essência do MAF em Poucas Linhas
+## 🎯 Project Objective
 
-Historicamente, cada provedor exigia seu próprio SDK proprietário com namespaces, DTOs e métodos diferentes (Vendor Lock-in). Com o **MAF (`Microsoft.Extensions.AI`)**, todos os provedores se tornam uma instância de **`IChatClient`**:
+> **Show developers how a single C# interface (`IChatClient`) and a single generic function can communicate with multiple AI providers (OpenAI, Google Gemini, Local Ollama, and Offline Simulated) without changing a single line of business code.**
+
+---
+
+## 💡 The Essence of MAF in a Few Lines
+
+Historically, each provider required its own proprietary SDK with different namespaces, DTOs, and method signatures (Vendor Lock-in). With **MAF (`Microsoft.Extensions.AI`)**, all providers become an instance of **`IChatClient`**:
 
 ```csharp
-// 1. Provedor Local Ollama (via API REST OpenAI /v1)
+// 1. Local Ollama Provider (via OpenAI REST API /v1)
 IChatClient client1 = new OpenAIClient(new ApiKeyCredential("local"), new OpenAIClientOptions { Endpoint = new Uri("http://localhost:11434/v1") })
     .GetChatClient("llama3.2:3b").AsIChatClient();
 
@@ -27,9 +27,9 @@ IChatClient client3 = new OpenAIClient(new ApiKeyCredential(geminiKey), new Open
     .GetChatClient("gemini-2.0-flash").AsIChatClient();
 ```
 
-### A Função de Negócio Genérica:
+### The Generic Business Function:
 ```csharp
-// Repare: esta função desconhece completamente quem é o provedor de IA!
+// Notice: this function has zero knowledge of which specific AI provider is behind the interface!
 static async Task SendChatAsync(IChatClient client, string prompt)
 {
     await foreach (var update in client.GetStreamingResponseAsync(prompt))
@@ -41,53 +41,52 @@ static async Task SendChatAsync(IChatClient client, string prompt)
 
 ---
 
-## ⚡ Como Executar
+## ⚡ How to Run
 
-### 1. Execução Imediata (Sem configurações ou com chaves do ambiente)
+### 1. Immediate Execution (Zero-config or with environment keys)
 ```bash
 dotnet run --project src/Module01/SimpleChatDemo
 ```
 
-Ao executar, você verá o menu interativo:
+When executed, you will see the interactive menu:
 ```text
 ==================================================================
- 🚀 MAF (Microsoft.Extensions.AI) — Chat Multi-Provider Quickstart 
+ 🚀 MAF (Microsoft.Extensions.AI) — Multi-Provider Chat Quickstart 
 ==================================================================
-Veja como uma única função C# conversa com múltiplos provedores de IA!
+See how a single C# function talks to multiple AI providers!
 
-Escolha o provedor para testar:
-  [1] 1. Simulado (Offline / Zero Config)
-  [2] 2. Ollama Local (API OpenAI /v1)
-  [3] 3. OpenAI Cloud (gpt-4o-mini)
-  [4] 4. Google Gemini (via OpenAI Endpoint)
-  [5] Disparar o mesmo prompt para TODOS os provedores em sequência!
-  [0] Sair
+Choose a provider to test:
+  [1] 1. Local Ollama (OpenAI API /v1)
+  [2] 2. OpenAI Cloud (gpt-4o-mini)
+  [3] 3. Google Gemini (via OpenAI Endpoint)
+  [4] Dispatch the same prompt to ALL providers in sequence!
+  [0] Exit
 
-Digite sua opção: 1
+Enter your option: 1
 ```
 
-Você pode:
-- Testar a opção `[1]` para ver a resposta imediata via streaming mesmo sem internet ou sem chaves de API.
-- Testar a opção `[3]` ou `[4]` com as chaves configuradas em `appsettings.Development.json`.
-- Testar a opção `[5]` para ver todos os provedores respondendo ao mesmo prompt um após o outro.
+You can:
+- Select option `[1]` to test local Ollama (requires Ollama running locally).
+- Select option `[2]` or `[3]` with keys configured in `appsettings.Development.json` or environment variables.
+- Select option `[4]` to watch all configured providers respond to the same prompt one after another.
 
 ---
 
-## ⚙️ Configurações (`appsettings.json` e `appsettings.Development.json`)
+## ⚙️ Configuration (`appsettings.json` and `appsettings.Development.json`)
 
-As configurações residem em:
-- `appsettings.json`: Arquivo base de template seguro para commit no repositório.
-- `appsettings.Development.json`: Arquivo local ignorado pelo `.gitignore` contendo as credenciais de desenvolvimento:
+Configuration files are located in:
+- `appsettings.json`: Safe base template file committed to the repository.
+- `appsettings.Development.json`: Local file ignored by `.gitignore` containing development credentials:
 
 ```json
 {
   "AiProviders": {
     "OpenAi": {
-      "ApiKey": "sua-chave-openai",
+      "ApiKey": "your-openai-key",
       "ModelId": "gpt-4o-mini"
     },
     "Gemini": {
-      "ApiKey": "sua-chave-gemini",
+      "ApiKey": "your-gemini-key",
       "Endpoint": "https://generativelanguage.googleapis.com/v1beta/openai/",
       "ModelId": "gemini-2.0-flash"
     },
