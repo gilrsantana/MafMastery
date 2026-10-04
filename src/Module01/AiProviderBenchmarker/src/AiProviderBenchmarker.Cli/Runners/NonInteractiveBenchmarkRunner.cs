@@ -10,7 +10,7 @@ using Spectre.Console;
 namespace AiProviderBenchmarker.Cli.Runners;
 
 /// <summary>
-/// Executor responsável pelo modo autônomo (não-interativo), ideal para CI/CD e automação.
+/// Runner responsible for autonomous (non-interactive) mode, suitable for CI/CD and automation pipelines.
 /// </summary>
 public class NonInteractiveBenchmarkRunner : IBenchmarkRunner
 {
@@ -34,7 +34,7 @@ public class NonInteractiveBenchmarkRunner : IBenchmarkRunner
             ? parsedOptions.Providers.ToList() 
             : ResolveDefaultProviders();
 
-        AnsiConsole.MarkupLine($"[bold green]Executando em modo não-interativo com {providers.Count} provedor(es)...[/]");
+        AnsiConsole.MarkupLine($"[bold green]Running in non-interactive mode with {providers.Count} provider(s)...[/]");
 
         var command = new RunBenchmarkCommand(
             Prompt: parsedOptions.Prompt,

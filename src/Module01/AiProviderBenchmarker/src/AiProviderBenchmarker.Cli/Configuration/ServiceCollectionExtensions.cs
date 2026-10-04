@@ -14,7 +14,7 @@ using Microsoft.Extensions.Hosting.Internal;
 namespace AiProviderBenchmarker.Cli.Configuration;
 
 /// <summary>
-/// Configuração centralizada de Injeção de Dependências (IoC) da aplicação CLI.
+/// Centralized Dependency Injection (IoC) configuration for the CLI application.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
@@ -32,14 +32,14 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddCliServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Configuração
+        // Configuration
         services.AddSingleton(configuration);
         services.Configure<AiProvidersOptions>(configuration.GetSection(AiProvidersOptions.SectionName));
 
-        // Domínio & Infraestrutura
+        // Domain & Infrastructure
         services.AddSingleton<ICostEstimator, CostEstimator>();
 
-        // Estratégias de Criação de Clientes (Padrão Strategy)
+        // Client Creation Strategies (Strategy Pattern)
         services.AddSingleton<IChatClientStrategy, SimulatedClientStrategy>();
         services.AddSingleton<IChatClientStrategy, AzureOpenAiClientStrategy>();
         services.AddSingleton<IChatClientStrategy, OpenAiCompatibleClientStrategy>();
@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IChatClientFactory, ChatClientFactory>();
         services.AddTransient<IRunBenchmarkUseCase, RunBenchmarkHandler>();
 
-        // Parsing e Runners da CLI
+        // CLI Parsing and Runners
         services.AddSingleton<CliArgumentParser>();
         services.AddTransient<InteractiveBenchmarkRunner>();
         services.AddTransient<NonInteractiveBenchmarkRunner>();

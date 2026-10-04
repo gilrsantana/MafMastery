@@ -3,7 +3,7 @@ using AiProviderBenchmarker.Cli.Arguments;
 namespace AiProviderBenchmarker.Cli.Runners;
 
 /// <summary>
-/// Contrato para os executores de benchmark da aplicação CLI.
+/// Contract for benchmark runners in the CLI application.
 /// </summary>
 public interface IBenchmarkRunner
 {

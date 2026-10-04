@@ -4,12 +4,12 @@ using Spectre.Console;
 namespace AiProviderBenchmarker.Cli.Arguments;
 
 /// <summary>
-/// Analisador de argumentos de linha de comando com suporte a execução interativa e não-interativa.
+/// Command-line argument parser supporting both interactive and non-interactive execution modes.
 /// </summary>
 public class CliArgumentParser
 {
     public const string DefaultPrompt = 
-        "Escreva uma função em C# 14 (.NET 10) que calcula Fibonacci usando busca binária em uma sequência pré-computada e trate exceções.";
+        "Write a C# 14 (.NET 10) function that calculates Fibonacci using binary search on a precomputed sequence with proper exception handling.";
 
     public const int DefaultMaxTokens = 300;
 

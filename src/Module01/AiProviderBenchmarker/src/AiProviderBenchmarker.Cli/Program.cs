@@ -7,8 +7,8 @@ using Spectre.Console;
 namespace AiProviderBenchmarker.Cli;
 
 /// <summary>
-/// Ponto de entrada (Entrypoint) minimalista da aplicação.
-/// Responsável unicamente pela inicialização de ambiente, captura de interrupção e disparo do container IoC.
+/// Minimal application entrypoint.
+/// Responsible solely for bootstrapping environment, cancellation capture, and triggering the IoC container.
 /// </summary>
 public static class Program
 {
@@ -21,7 +21,7 @@ public static class Program
         {
             eventArgs.Cancel = true;
             cts.Cancel();
-            AnsiConsole.MarkupLine("[bold red]\nOperação cancelada pelo usuário (Ctrl+C).[/]");
+            AnsiConsole.MarkupLine("[bold red]\nOperation cancelled by user (Ctrl+C).[/]");
         };
 
         var configuration = ServiceCollectionExtensions.BuildAppConfiguration();

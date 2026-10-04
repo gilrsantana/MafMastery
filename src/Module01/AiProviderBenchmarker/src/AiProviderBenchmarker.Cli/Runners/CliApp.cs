@@ -4,7 +4,7 @@ using AiProviderBenchmarker.Cli.UI;
 namespace AiProviderBenchmarker.Cli.Runners;
 
 /// <summary>
-/// Orquestrador principal da aplicação CLI. Determina o modo de operação e despacha para o executor adequado.
+/// Main CLI application orchestrator. Determines the execution mode and dispatches to the appropriate runner.
 /// </summary>
 public class CliApp
 {

@@ -3,24 +3,24 @@ using Spectre.Console;
 namespace AiProviderBenchmarker.Cli.UI;
 
 /// <summary>
-/// Renderizador da documentação e tela de ajuda via linha de comando.
+/// Renderer for command-line documentation and help screens.
 /// </summary>
 public static class CliHelpRenderer
 {
     public static void Render()
     {
-        AnsiConsole.MarkupLine("[bold cyan]AiProviderBenchmarker — CLI de Benchmark e SLA de IA[/]");
+        AnsiConsole.MarkupLine("[bold cyan]AiProviderBenchmarker — AI Benchmark & SLA CLI[/]");
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[bold]Uso interativo:[/] [green]dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli[/]");
-        AnsiConsole.MarkupLine("[bold]Uso com parâmetros:[/] [green]dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [[opções]][/]");
+        AnsiConsole.MarkupLine("[bold]Interactive usage:[/] [green]dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli[/]");
+        AnsiConsole.MarkupLine("[bold]Command-line usage:[/] [green]dotnet run --project src/Module01/AiProviderBenchmarker/src/AiProviderBenchmarker.Cli -- [[options]][/]");
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[bold yellow]Opções disponíveis:[/]");
-        AnsiConsole.MarkupLine("  [yellow]-p, --prompt <texto>[/]       Prompt de avaliação a ser enviado");
-        AnsiConsole.MarkupLine("  [yellow]--providers <lista>[/]        Provedores separados por vírgula (Ex: Simulated,OpenAi,AzureOpenAi,Ollama)");
-        AnsiConsole.MarkupLine("  [yellow]-m, --max-tokens <num>[/]     Quantidade máxima de tokens gerados (default: 300)");
-        AnsiConsole.MarkupLine("  [yellow]-h, --help[/]                 Exibe esta mensagem de ajuda");
+        AnsiConsole.MarkupLine("[bold yellow]Available options:[/]");
+        AnsiConsole.MarkupLine("  [yellow]-p, --prompt <text>[/]        Evaluation prompt to send");
+        AnsiConsole.MarkupLine("  [yellow]--providers <list>[/]         Comma-separated providers (e.g., Simulated,OpenAi,AzureOpenAi,Ollama)");
+        AnsiConsole.MarkupLine("  [yellow]-m, --max-tokens <num>[/]     Maximum output tokens generated (default: 300)");
+        AnsiConsole.MarkupLine("  [yellow]-h, --help[/]                 Display this help message");
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[grey]Nota: Ao usar 'dotnet run', separe os argumentos da sua aplicação usando '--'. Exemplo:[/]");
+        AnsiConsole.MarkupLine("[grey]Note: When using 'dotnet run', separate application arguments using '--'. Example:[/]");
         AnsiConsole.MarkupLine("[grey]  dotnet run --project .../AiProviderBenchmarker.Cli -- --providers Ollama,Simulated --max-tokens 200[/]");
         AnsiConsole.WriteLine();
     }

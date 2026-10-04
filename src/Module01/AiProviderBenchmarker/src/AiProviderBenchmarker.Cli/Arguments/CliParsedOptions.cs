@@ -1,7 +1,7 @@
 namespace AiProviderBenchmarker.Cli.Arguments;
 
 /// <summary>
-/// Representa as opções processadas passadas para a CLI.
+/// Represents parsed command-line arguments passed to the CLI.
 /// </summary>
 public record CliParsedOptions(
     bool IsHelp,

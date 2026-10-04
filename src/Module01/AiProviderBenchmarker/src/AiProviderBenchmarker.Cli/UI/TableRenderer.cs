@@ -14,8 +14,8 @@ public static class TableRenderer
                 .Color(Color.Cyan1));
 
         var panel = new Panel(
-            new Markup("[bold yellow]Módulo 01:[/] [white]AiProviderBenchmarker — Comparador Concorrente de Provedores de IA[/]\n" +
-                       "[grey]Baseado em Microsoft.Extensions.AI (MEAI) | .NET 10 LTS | Clean Architecture[/]"))
+            new Markup("[bold yellow]Module 01:[/] [white]AiProviderBenchmarker — Concurrent AI Provider Benchmark & SLA Comparer[/]\n" +
+                       "[grey]Powered by Microsoft.Extensions.AI (MEAI) | .NET 10 LTS | Clean Architecture[/]"))
         {
             Border = BoxBorder.Rounded,
             BorderStyle = new Style(Color.SteelBlue)
@@ -29,26 +29,26 @@ public static class TableRenderer
     {
         if (results.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]Nenhum resultado de benchmark coletado.[/]");
+            AnsiConsole.MarkupLine("[yellow]No benchmark results collected.[/]");
             return;
         }
 
         AnsiConsole.WriteLine();
         var promptPreview = prompt.Length > 80 ? prompt[..77] + "..." : prompt;
-        AnsiConsole.MarkupLine($"[grey]Prompt avaliado:[/] [italic white]\"{Markup.Escape(promptPreview)}\"[/]");
+        AnsiConsole.MarkupLine($"[grey]Evaluated prompt:[/] [italic white]\"{Markup.Escape(promptPreview)}\"[/]");
         AnsiConsole.WriteLine();
 
         var table = new Table()
             .Border(TableBorder.Rounded)
-            .Title("[bold cyan]📊 Relatório Consolidado de SLA e FinOps[/]");
+            .Title("[bold cyan]📊 Consolidated SLA and FinOps Report[/]");
 
-        table.AddColumn(new TableColumn("[bold]Provedor / Modelo[/]"));
+        table.AddColumn(new TableColumn("[bold]Provider / Model[/]"));
         table.AddColumn(new TableColumn("[bold]Status[/]").Centered());
         table.AddColumn(new TableColumn("[bold]TTFT[/]").RightAligned());
-        table.AddColumn(new TableColumn("[bold]Latência[/]").RightAligned());
-        table.AddColumn(new TableColumn("[bold]Tokens E/S[/]").RightAligned());
+        table.AddColumn(new TableColumn("[bold]Latency[/]").RightAligned());
+        table.AddColumn(new TableColumn("[bold]Tokens In/Out[/]").RightAligned());
         table.AddColumn(new TableColumn("[bold]TPS (Tokens/s)[/]").RightAligned());
-        table.AddColumn(new TableColumn("[bold]Custo ($ USD)[/]").RightAligned());
+        table.AddColumn(new TableColumn("[bold]Cost ($ USD)[/]").RightAligned());
 
         var successfulResults = results.Where(r => r.Success).ToList();
         var lowestTtft = successfulResults.Count > 0 ? successfulResults.Min(r => r.TimeToFirstToken) : TimeSpan.Zero;
@@ -60,7 +60,7 @@ public static class TableRenderer
             var providerName = $"[bold white]{metric.Provider}[/]\n[grey]{metric.ModelName}[/]";
             var status = metric.Success 
                 ? "[green]✔ OK[/]" 
-                : "[red]✖ Falha[/]";
+                : "[red]✖ Failed[/]";
 
             if (!metric.Success)
             {
@@ -106,9 +106,9 @@ public static class TableRenderer
 
         AnsiConsole.Write(table);
 
-        // Renderiza Snippets de Resposta
+        // Render Response Snippets
         AnsiConsole.WriteLine();
-        var tree = new Tree("[bold blue]📝 Prévia das Respostas Geradas[/]");
+        var tree = new Tree("[bold blue]📝 Generated Responses Preview[/]");
         foreach (var metric in results)
         {
             if (metric.Success)
@@ -118,13 +118,13 @@ public static class TableRenderer
             }
             else
             {
-                var errorNode = tree.AddNode($"[bold red]{metric.Provider}[/] (Falha)");
-                errorNode.AddNode(new Markup($"[red]Erro: {Markup.Escape(metric.ErrorMessage ?? "Desconhecido")}[/]"));
+                var errorNode = tree.AddNode($"[bold red]{metric.Provider}[/] (Failed)");
+                errorNode.AddNode(new Markup($"[red]Error: {Markup.Escape(metric.ErrorMessage ?? "Unknown")}[/]"));
             }
         }
         AnsiConsole.Write(tree);
 
-        // Vencedores do Benchmark
+        // Benchmark Winners Podium
         if (successfulResults.Count > 1)
         {
             AnsiConsole.WriteLine();
@@ -138,9 +138,9 @@ public static class TableRenderer
             summaryGrid.AddColumn();
 
             summaryGrid.AddRow(
-                new Panel($"[bold green]🚀 Menor TTFT[/]\n[white]{winnerTtft.Provider}[/] [cyan]({winnerTtft.ModelName})[/]\n({winnerTtft.TimeToFirstToken.TotalMilliseconds:F0} ms)") { Border = BoxBorder.Rounded },
-                new Panel($"[bold green]⚡ Maior Throughput[/]\n[white]{winnerTps.Provider}[/] [cyan]({winnerTps.ModelName})[/]\n({winnerTps.TokensPerSecond:F1} tokens/s)") { Border = BoxBorder.Rounded },
-                new Panel($"[bold green]💰 Mais Econômico[/]\n[white]{winnerCost.Provider}[/] [cyan]({winnerCost.ModelName})[/]\n(${winnerCost.EstimatedCostUsd:F6})") { Border = BoxBorder.Rounded }
+                new Panel($"[bold green]🚀 Lowest TTFT[/]\n[white]{winnerTtft.Provider}[/] [cyan]({winnerTtft.ModelName})[/]\n({winnerTtft.TimeToFirstToken.TotalMilliseconds:F0} ms)") { Border = BoxBorder.Rounded },
+                new Panel($"[bold green]⚡ Highest Throughput[/]\n[white]{winnerTps.Provider}[/] [cyan]({winnerTps.ModelName})[/]\n({winnerTps.TokensPerSecond:F1} tokens/s)") { Border = BoxBorder.Rounded },
+                new Panel($"[bold green]💰 Most Economical[/]\n[white]{winnerCost.Provider}[/] [cyan]({winnerCost.ModelName})[/]\n(${winnerCost.EstimatedCostUsd:F6})") { Border = BoxBorder.Rounded }
             );
 
             AnsiConsole.Write(summaryGrid);
@@ -161,7 +161,7 @@ public static class TableRenderer
                 : $"[grey]○ {name}[/]\n[italic darkorange3]{details}[/]";
 
         var formatted = options.Providers.Select(p => 
-            FormatStatus(p.AiProviderName, p.IsConfigured, p.IsConfigured ? p.DeploymentName : "Chave ausente (Fallback)")
+            FormatStatus(p.AiProviderName, p.IsConfigured, p.IsConfigured ? p.DeploymentName : "Missing key (Fallback)")
         ).ToList();
 
         for (var i = 0; i < formatted.Count; i += 4)
@@ -169,22 +169,10 @@ public static class TableRenderer
             var chunk = formatted.Skip(i).Take(4).ToArray();
             statusGrid.AddRow(chunk);
         }
-        
-        // var openAi = options.GetProvider("OpenAi");
-        // var azure = options.GetProvider("AzureOpenAi");
-        // var ollama = options.GetProvider("Ollama");
-        // var sim = options.GetProvider("Simulated");
-        //
-        // statusGrid.AddRow(
-        //     FormatStatus("OpenAI", openAi is { IsConfigured: true }, openAi is { IsConfigured: true } ? openAi.DeploymentName : "Chave ausente (Fallback Simulado)"),
-        //     FormatStatus("Azure OpenAI", azure is { IsConfigured: true }, azure is { IsConfigured: true } ? azure.DeploymentName : "Endpoint ausente (Fallback)"),
-        //     FormatStatus("Ollama (Local)", ollama is { IsConfigured: true }, ollama is { IsConfigured: true } ? ollama.DeploymentName : "Ollama desabilitado"),
-        //     FormatStatus("Simulado (Offline)", sim?.Enabled ?? true, !string.IsNullOrWhiteSpace(sim?.DeploymentName) ? sim.DeploymentName : "simulated-fast-llm")
-        // );
 
         var panel = new Panel(statusGrid)
         {
-            Header = new PanelHeader("[bold white]Provedores Detectados no Ambiente[/]"),
+            Header = new PanelHeader("[bold white]Providers Detected in Environment[/]"),
             Border = BoxBorder.Rounded,
             BorderStyle = new Style(Color.Grey37)
         };
