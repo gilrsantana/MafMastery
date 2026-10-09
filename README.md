@@ -64,7 +64,7 @@ All modules and capstone projects in this curriculum are built upon four non-neg
 
 3. **The Twelve-Factor App & The Twelve-Factor Agent**:
    - Adoption of stateless processes, decoupled backing services (for vector databases and caches), isolated configuration via environment variables, and telemetry treated as continuous event streams.
-   - Implementation of the 12 tenets for autonomous agents: deterministic control over stochastic model outputs, tenant and credential isolation, compact schemas (JSON/TON), tool idempotency, and explicit Human-in-the-Loop approval gates.
+   - Implementation of the 12 tenets for autonomous agents: strict separation of the **Deterministic Control Plane (Finite State Machines / Harel Statecharts)** from stochastic generative model execution, tenant and credential isolation, compact schemas (JSON/TON), tool idempotency, and explicit Human-in-the-Loop approval gates (see **[Module 14: Advanced Multi-Agent Orchestration & State Machines](#module-14-advanced-multi-agent-orchestration-graph-workflows-state-machines-and-parallelsequential-execution)**).
 
 ---
 
@@ -278,17 +278,38 @@ All modules and capstone projects in this curriculum are built upon four non-neg
 
 ---
 
-### Module 14: Advanced Multi-Agent Orchestration: Graph Workflows and Parallel/Sequential Execution
-- **Context & Goals**: Deterministic vs. stochastic multi-agent orchestration; graph-based workflows in Microsoft Agent Framework; sequential, parallel (fan-out/fan-in), and dynamic orchestration inspired by Magentic-One; state isolation across execution nodes via `IResettableExecutor`.
-- **Abstractions & Frameworks**: `Microsoft.Agents.AI.Workflows`, Workflow Builders, Graph State Management, `IResettableExecutor`.
-- **Principles & Patterns**: Saga Pattern, Directed Acyclic Graph (DAG), Event-Driven Architecture, Twelve-Factor Agent: Factor 3 (Event-Driven & Graph State Transitions).
+### Module 14: Advanced Multi-Agent Orchestration: Graph Workflows, State Machines, and Parallel/Sequential Execution
+- **Context & Goals**:
+  - **Deterministic Multi-Agent Governance**: Overcoming "Agent Slop", infinite reasoning loops, and prompt drift in multi-agent systems by replacing unstructured prompt supervisors with explicit, mathematically bounded state graphs;
+  - **The StateFlow Paradigm (COLM 2024)**: Decoupling **Process Grounding** (deterministic state navigation, transition logic, loop termination bounds) from **Sub-task Solving** (localized LLM generation inside nodes);
+  - **David Harel's Statecharts (1987)**: Modeling multi-agent topologies using **Hierarchical Super-states (OR-states)** to prevent state explosion, **Orthogonal Regions (AND-states)** for concurrent parallel execution (fan-out/fan-in) with barrier synchronization, and **History States ($H$)**;
+  - **MetaAgent Graph Verification (ICML 2025)**: Validating state machine topologies in C# to statically detect deadlocks, unreachable states, and cyclic sink traps before runtime execution;
+  - **State Isolation & Memory Sanitization**: Preventing cross-agent context pollution and cascading hallucinations using `IResettableExecutor` in the Microsoft Agent Framework;
+  - **Distributed Sagas**: Long-running workflow persistence with MassTransit Saga State Machines and Redis, supporting durable Human-in-the-Loop checkpoints.
+- **Abstractions & Frameworks**: `Microsoft.Agents.AI.Workflows`, `Stateless` (Hierarchical State Machines in .NET), `Microsoft.Extensions.AI`, `IResettableExecutor`, `MassTransit` (Saga State Machines), `System.Diagnostics.ActivitySource`.
+- **Principles & Patterns**: Finite State Machine (FSM) & Hierarchical Statecharts (Harel), StateFlow Paradigm (COLM 2024), Saga Pattern with Compensatory Actions, Directed Acyclic Graph (DAG), Barrier / Fan-Out/Fan-In Pattern, Twelve-Factor Agent: Factor 1 (Deterministic Control Plane), Factor 3 (Event-Driven & Graph State Transitions), and Factor 11 (Human-in-the-Loop Approval Gates).
+- **Academic & Literature References**:
+  - [StateFlow: Enhancing LLM Task-Solving through State-Driven Workflows (COLM 2024)](https://arxiv.org/abs/2403.11322)
+  - [MetaAgent: Auto-Constructing FSM-based Multi-Agent Systems (ICML 2025)](https://arxiv.org/abs/2410.03816)
+  - [Statecharts: A Visual Formalism for Complex Systems (David Harel, 1987)](https://www.sciencedirect.com/science/article/pii/0167642387900359)
+  - [Practical UML Statecharts in C/C++: Event-Driven Programming (Miro Samek)](https://www.state-machine.com/psicc2)
 - **Microsoft Learn References**:
   - [State Isolation in MAF Workflows](https://learn.microsoft.com/agent-framework/concepts/workflows/state)
   - [Magentic Orchestration in Agent Framework](https://learn.microsoft.com/agent-framework/workflows/orchestrations/magentic)
-- **Capstone Project 14**:
-  - *Name*: `EnterpriseAudit.MultiAgentWorkflow`
-  - *Path*: `src/Module14/EnterpriseAudit/`
-  - *Scope*: Orchestrated workflow comprising 3 specialized agents (Regulations Researcher, Financial Data Analyst, and Compliance Auditor) coordinated by a Manager Agent. The workflow executes parallel data analysis, reconciles discrepancies across conditional graph branches, and compiles an audited final report with isolated state across concurrent runs.
+  - [Workflow Builders in Microsoft Agent Framework](https://learn.microsoft.com/agent-framework/workflows/)
+- **Detailed Study Guide**:
+  - *Location*: [`docs/modules/module-14-multi-agent-orchestration-and-state-machines/STUDY_GUIDE.md`](file:///home/gilmar/Development/MafMastery/docs/modules/module-14-multi-agent-orchestration-and-state-machines/STUDY_GUIDE.md)
+- **Capstone Projects 14**:
+  - *Project 14.1 (Initial Workflow Project)*: `EmailApprovalWorkflow.StateMachine`
+    - *Path*: `src/Module14/EmailApprovalWorkflow/`
+    - *Run & Test*: `dotnet run --project src/Module14/EmailApprovalWorkflow/src/EmailApprovalWorkflow.Cli`
+    - *Scope*: Foundational single-agent workflow implementing the StateFlow paradigm with `Stateless` and `Microsoft.Extensions.AI`. Demonstrates strongly-typed states and triggers (`Drafting`, `AwaitingHumanApproval`, `Dispatching`) with guarded transitions (`PermitIf`), mathematically guaranteeing that destructive actions cannot execute without explicit human approval.
+  - *Project 14.2 (Advanced Enterprise Multi-Agent Project)*: `EnterpriseAudit.MultiAgentWorkflow`
+    - *Path*: `src/Module14/EnterpriseAudit/`
+    - *Run & Test*:
+      - Orchestrator CLI: `dotnet run --project src/Module14/EnterpriseAudit/src/EnterpriseAudit.Cli`
+      - Test Suite: `dotnet test src/Module14/EnterpriseAudit/EnterpriseAudit.slnx`
+    - *Scope*: StateFlow-driven hierarchical statechart orchestrator in C# (.NET 10). Executes an enterprise compliance audit across 3 specialized agents: *Regulations Researcher*, *Financial Data Analyst*, and *Compliance Auditor*. Parallel research runs inside an orthogonal (AND-state) region with barrier synchronization; discrepancies trigger conditional remediation states bounded by a maximum transition counter (preventing infinite loops); destructive final sign-offs require an unskippable Human-in-the-Loop approval gate with isolated state across concurrent sessions.
 
 ---
 
